@@ -1,4 +1,4 @@
-package com.OscarPele.simulacion.ms_auth;
+package com.oscar.proyecto.ms_auth;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

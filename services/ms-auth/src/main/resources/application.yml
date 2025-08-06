@@ -1,0 +1,15 @@
+spring:
+  application:
+    name: ms-auth
+  datasource:
+    url: jdbc:postgresql://localhost:5432/authdb
+    username: auth_user
+    password: secret
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+auth:
+  jwt:
+    secret: ${JWT_SECRET:mi_clave_por_defecto_asegurada}
+    expiration: 3600  # segundos

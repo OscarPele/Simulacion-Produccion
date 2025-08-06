@@ -1,4 +1,4 @@
-package com.OscarPele.simulacion.ms_auth;
+package com.oscar.proyecto.ms_auth;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

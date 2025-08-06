@@ -1,0 +1,15 @@
+spring:
+  application:
+    timezone: Europe/Madrid
+  jackson:
+    serialization:
+      indent_output: false
+logging:
+  level:
+    root: INFO
+    com.oscar.proyecto: DEBUG
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
