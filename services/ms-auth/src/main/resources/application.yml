@@ -1,15 +1,45 @@
 spring:
   application:
     name: ms-auth
+  jackson:
+    time-zone: Europe/Madrid
+    serialization:
+      indent_output: false
   datasource:
     url: jdbc:postgresql://localhost:5432/authdb
     username: auth_user
     password: secret
+    hikari:
+      maximum-pool-size: 10
   jpa:
     hibernate:
       ddl-auto: update
+    open-in-view: false
 
-auth:
+server:
+  port: 8081
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always
+
+logging:
+  level:
+    root: INFO
+    com.oscar.proyecto: DEBUG
+
+app:
   jwt:
-    secret: ${JWT_SECRET:mi_clave_por_defecto_asegurada}
-    expiration: 3600  # segundos
+    secret: "078bc5157ddee8a671d54eaa43bc197fcf02e92f8ec8696a2526b7a0a2f7a8410c8d335ccad6e4df2fc840752b5fcc51c85eb82d0659cce61c1ac81eb07cfbde
+"
+    expiration-minutes: 60
+
+cors:
+  allowed-origins: "http://localhost:3000,http://localhost:8080"
+  allowed-methods: "GET,POST,PUT,DELETE,OPTIONS"
+  allowed-headers: "*"
