@@ -8,19 +8,19 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class UserService {
-    private final UserRepository repo;
+    private final UserRepository userRepo;
     private final PasswordEncoder encoder;
 
     public UserService(UserRepository repo, PasswordEncoder encoder) {
-        this.repo = repo; this.encoder = encoder;
+        this.userRepo = repo; this.encoder = encoder;
     }
 
     @Transactional
     public User register(String username, String email, String rawPassword) {
-        if (repo.existsByUsername(username)) {
+        if (userRepo.existsByUsername(username)) {
             throw new UsernameAlreadyExistsException();
         }
-        if (repo.existsByEmail(email)) {
+        if (userRepo.existsByEmail(email)) {
             throw new EmailAlreadyExistsException();
         }
 
@@ -28,6 +28,6 @@ public class UserService {
         u.setUsername(username);
         u.setEmail(email);
         u.setPasswordHash(encoder.encode(rawPassword));
-        return repo.save(u);
+        return userRepo.save(u);
     }
 }
