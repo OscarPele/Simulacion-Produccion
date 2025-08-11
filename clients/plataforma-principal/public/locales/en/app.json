@@ -1,0 +1,24 @@
+{
+  "company": {
+    "fullName": "Oscar Production Simulator"
+  },
+  "titles": {
+    "login": {
+      "title": "Log in to your account",
+      "subtitle": "Enter your email address and password to log in"
+    },
+    "register": {
+      "title": "Create your account",
+      "subtitle": "Fill in your details to create an account"
+    }
+  },
+  "images": {
+    "dashboardMainAlt": "Dashboard main preview",
+    "dashboardMiniAlt": "Mini stat preview"
+  },
+  "lang": {
+    "switch": "Change language",
+    "en": "English",
+    "es": "Spanish"
+  }
+}

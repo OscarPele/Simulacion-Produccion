@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react';
 import { FaCog } from 'react-icons/fa';
+import { useTranslation } from 'react-i18next';
 
 import './App.scss';
 import LoginForm from './components/Login/LoginForm';
@@ -11,6 +12,9 @@ type Anim = 'idle' | 'expanding' | 'closing';
 type CSSVars = React.CSSProperties & { [key: `--${string}`]: string };
 
 function App() {
+  const { t, i18n } = useTranslation('app');
+
+
   const [mode, setMode] = useState<Mode>('login');
   const [anim, setAnim] = useState<Anim>('idle');
   const [nextMode, setNextMode] = useState<Mode | null>(null);
@@ -37,17 +41,6 @@ function App() {
       setAnim('idle');
     }
   };
-
-  const copy =
-    mode === 'login'
-      ? {
-          title: 'Log in to your account',
-          subtitle: 'Enter your email address and password to log in',
-        }
-      : {
-          title: 'Create your account',
-          subtitle: 'Fill in your details to create an account',
-        };
 
   const circleClass = [
     'circle-mask',
@@ -79,13 +72,15 @@ function App() {
               <div className="company-header">
                 <h1 className="company-acronym">O.P.S.</h1>
               </div>
-              <p className="company-complete-name">Oscar Production Simulator</p>
+              <p className="company-complete-name">
+                {t('company.fullName')}
+              </p>
             </div>
           </div>
 
           <div>
-            <h1>{copy.title}</h1>
-            <p>{copy.subtitle}</p>
+            <h1>{t(`titles.${mode}.title`)}</h1>
+            <p>{t(`titles.${mode}.subtitle`)}</p>
           </div>
 
           <div className="forms">
@@ -95,7 +90,30 @@ function App() {
               <RegisterForm onGoLogin={(e) => startTransition('login', e)} />
             )}
           </div>
+          
+
+          {/* Selector de idioma */}
+          <div className="lang-switcher" role="group" aria-label={t('lang.switch')}>
+            <button
+              type="button"
+              onClick={() => i18n.changeLanguage('es')}
+              aria-pressed={i18n.language.startsWith('es')}
+              className={i18n.language.startsWith('es') ? 'active' : ''}
+            >
+              {t('lang.es')}
+            </button>
+            <button
+              type="button"
+              onClick={() => i18n.changeLanguage('en')}
+              aria-pressed={i18n.language.startsWith('en')}
+              className={i18n.language.startsWith('en') ? 'active' : ''}
+            >
+              {t('lang.en')}
+            </button>
+          </div>
         </div>
+
+        
       </div>
 
       <div className="dashboard-preview-container">
@@ -103,12 +121,12 @@ function App() {
           <img src={dashboardImg} alt="Logo" className="dashboard-logo" />
           <img
             src={dashboardImg}
-            alt="Dashboard main preview"
+            alt={t('images.dashboardMainAlt')}
             className="dashboard-main-img"
           />
           <img
             src={dashboardImg}
-            alt="Mini stat preview"
+            alt={t('images.dashboardMiniAlt')}
             className="dashboard-mini-img"
           />
         </div>

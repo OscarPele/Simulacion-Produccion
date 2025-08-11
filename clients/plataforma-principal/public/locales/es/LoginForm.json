@@ -1,0 +1,12 @@
+{
+  "emailPlaceholder": "Correo electrónico",
+  "passwordPlaceholder": "Contraseña",
+  "showPassword": "Mostrar contraseña",
+  "hidePassword": "Ocultar contraseña",
+  "errorConnecting": "No se pudo conectar con el servidor",
+  "login": "Iniciar sesión",
+  "loggingIn": "Entrando…",
+  "dontHaveAccount": "¿No tienes una cuenta?",
+  "signUp": "Regístrate",
+  "errorWithCode": "Error {{code}}"
+}

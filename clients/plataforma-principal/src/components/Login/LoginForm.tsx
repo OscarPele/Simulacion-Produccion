@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { FiMail, FiLock, FiEye, FiEyeOff } from 'react-icons/fi';
 import './LoginForm.scss';
 
@@ -11,6 +12,8 @@ type Props = {
 };
 
 export default function LoginForm({ onSuccess, onGoRegister }: Props) {
+  const { t } = useTranslation('LoginForm');
+
   const API = (import.meta.env.VITE_API_BASE_URL as string) ?? '';
   const endpoint = `${API.replace(/\/$/, '')}/auth/login`;
 
@@ -45,7 +48,7 @@ export default function LoginForm({ onSuccess, onGoRegister }: Props) {
       onSuccess?.(data);
       setForm({ email: '', password: '' });
     } catch {
-      setErrorMsg('No se pudo conectar con el servidor');
+      setErrorMsg(t('errorConnecting'));
     } finally {
       setLoading(false);
     }
@@ -63,7 +66,7 @@ export default function LoginForm({ onSuccess, onGoRegister }: Props) {
             name="email"
             type="email"
             autoComplete="email"
-            placeholder="Email Address"
+            placeholder={t('emailPlaceholder')}
             value={form.email}
             onChange={handleChange}
             required
@@ -80,7 +83,7 @@ export default function LoginForm({ onSuccess, onGoRegister }: Props) {
             name="password"
             type={showPwd ? 'text' : 'password'}
             autoComplete="current-password"
-            placeholder="Password"
+            placeholder={t('passwordPlaceholder')}
             value={form.password}
             onChange={handleChange}
             required
@@ -91,7 +94,7 @@ export default function LoginForm({ onSuccess, onGoRegister }: Props) {
             type="button"
             className="right-icon"
             onClick={() => setShowPwd((v) => !v)}
-            aria-label={showPwd ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+            aria-label={showPwd ? t('hidePassword') : t('showPassword')}
           >
             {showPwd ? <FiEyeOff /> : <FiEye />}
           </button>
@@ -104,11 +107,11 @@ export default function LoginForm({ onSuccess, onGoRegister }: Props) {
         )}
 
         <button type="submit" className="primary-button" disabled={loading}>
-          {loading ? 'Entrando…' : 'Login'}
+          {loading ? t('loggingIn') : t('login')}
         </button>
 
         <p className="signup-text">
-          Don’t you have an account?{' '}
+          {t('dontHaveAccount')}{' '}
           <a
             href="#register"
             className="signup-link"
@@ -117,7 +120,7 @@ export default function LoginForm({ onSuccess, onGoRegister }: Props) {
               onGoRegister?.(e);
             }}
           >
-            Sign Up
+            {t('signUp')}
           </a>
         </p>
       </fieldset>
