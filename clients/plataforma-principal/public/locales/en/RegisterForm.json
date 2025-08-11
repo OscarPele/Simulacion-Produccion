@@ -1,0 +1,14 @@
+{
+  "usernamePlaceholder": "Username",
+  "emailPlaceholder": "Email address",
+  "passwordPlaceholder": "Password",
+  "showPassword": "Show password",
+  "hidePassword": "Hide password",
+  "passwordHint": "Minimum 8 characters (uppercase, lowercase and numbers).",
+  "errorConnecting": "Could not connect to the server",
+  "errorWithCode": "Error {{code}}",
+  "createAccount": "Create account",
+  "creatingAccount": "Creating account…",
+  "alreadyHaveAccount": "Already have an account?",
+  "logIn": "Log in"
+}

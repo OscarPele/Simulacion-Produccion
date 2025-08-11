@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { FiUser, FiMail, FiLock, FiEye, FiEyeOff } from 'react-icons/fi';
 import '../Login/LoginForm.scss';
 
@@ -9,6 +10,8 @@ type Props = {
 };
 
 export default function RegisterForm({ onGoLogin }: Props) {
+  const { t } = useTranslation('RegisterForm');
+
   const API = (import.meta.env.VITE_API_BASE_URL as string) ?? '';
   const endpoint = `${API.replace(/\/$/, '')}/auth/register`;
 
@@ -34,12 +37,12 @@ export default function RegisterForm({ onGoLogin }: Props) {
         body: JSON.stringify(form),
       });
       if (!res.ok) {
-        setErrorMsg(`Error ${res.status}`);
+        setErrorMsg(t('errorWithCode', { code: res.status }));
         return;
       }
       setForm({ username: '', email: '', password: '' });
     } catch {
-      setErrorMsg('No se pudo conectar con el servidor');
+      setErrorMsg(t('errorConnecting'));
     } finally {
       setLoading(false);
     }
@@ -57,7 +60,7 @@ export default function RegisterForm({ onGoLogin }: Props) {
             name="username"
             type="text"
             autoComplete="username"
-            placeholder="Username"
+            placeholder={t('usernamePlaceholder')}
             required
             minLength={3}
             value={form.username}
@@ -75,7 +78,7 @@ export default function RegisterForm({ onGoLogin }: Props) {
             name="email"
             type="email"
             autoComplete="email"
-            placeholder="Email Address"
+            placeholder={t('emailPlaceholder')}
             required
             value={form.email}
             onChange={handleChange}
@@ -91,8 +94,8 @@ export default function RegisterForm({ onGoLogin }: Props) {
             id="password"
             name="password"
             type={showPwd ? 'text' : 'password'}
-            autoComplete='new-password'
-            placeholder="Password"
+            autoComplete="new-password"
+            placeholder={t('passwordPlaceholder')}
             required
             minLength={8}
             value={form.password}
@@ -103,14 +106,14 @@ export default function RegisterForm({ onGoLogin }: Props) {
             type="button"
             className="right-icon"
             onClick={() => setShowPwd((v) => !v)}
-            aria-label={showPwd ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+            aria-label={showPwd ? t('hidePassword') : t('showPassword')}
           >
             {showPwd ? <FiEyeOff /> : <FiEye />}
           </button>
         </div>
 
         <small className="signup-text" style={{ marginTop: 0 }}>
-          Mínimo 8 caracteres (mayúsculas, minúsculas y números).
+          {t('passwordHint')}
         </small>
 
         {errorMsg && (
@@ -120,11 +123,11 @@ export default function RegisterForm({ onGoLogin }: Props) {
         )}
 
         <button type="submit" className="primary-button" disabled={loading}>
-          {loading ? 'Creando cuenta…' : 'Create account'}
+          {loading ? t('creatingAccount') : t('createAccount')}
         </button>
 
         <p className="signup-text">
-          Already have an account?{' '}
+          {t('alreadyHaveAccount')}{' '}
           <a
             href="#login"
             className="signup-link"
@@ -133,7 +136,7 @@ export default function RegisterForm({ onGoLogin }: Props) {
               onGoLogin?.(e);
             }}
           >
-            Log in
+            {t('logIn')}
           </a>
         </p>
       </fieldset>
