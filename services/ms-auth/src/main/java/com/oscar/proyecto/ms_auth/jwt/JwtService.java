@@ -9,6 +9,7 @@ import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import io.jsonwebtoken.io.DecodingException;
 import javax.crypto.SecretKey;
 import java.time.Instant;
 import java.util.Date;
@@ -28,7 +29,7 @@ public class JwtService {
         byte[] keyBytes;
         try {
             keyBytes = Decoders.BASE64.decode(secret);
-        } catch (IllegalArgumentException ignored) {
+        } catch (IllegalArgumentException | DecodingException ignored) {
             keyBytes = secret.getBytes();
         }
         this.key = Keys.hmacShaKeyFor(keyBytes);
@@ -46,7 +47,6 @@ public class JwtService {
                 .compact();
     }
 
-    /** Devuelve Claims si el token es válido; si no, null. */
     public Claims parseClaims(String token) {
         try {
             return Jwts.parserBuilder()
