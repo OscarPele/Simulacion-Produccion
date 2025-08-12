@@ -7,8 +7,16 @@
   "passwordHint": "Minimum 8 characters (uppercase, lowercase and numbers).",
   "errorConnecting": "Could not connect to the server",
   "errorWithCode": "Error {{code}}",
+  "usernameTaken": "Username is already taken",
+  "emailTaken": "Email is already registered",
+  "passwordTooShort": "Password must be at least 8 characters",
+  "registeredSuccessfully": "Registered successfully",
   "createAccount": "Create account",
   "creatingAccount": "Creating account…",
   "alreadyHaveAccount": "Already have an account?",
-  "logIn": "Log in"
+  "logIn": "Log in",
+  "usernameRequired": "Username is required",
+  "emailRequired": "Email is required",
+  "invalidForm": "Please review the form fields",
+  "serverError": "Server error — please try again later"
 }

@@ -3,6 +3,7 @@
   max-width: 450px;
   display: grid;
   gap: 16px;
+  overflow: visible; /* evita clipping si hay glow interno/externo */
 }
 
 .fieldset {
@@ -11,6 +12,7 @@
   margin: 0;
   display: grid;
   gap: 14px;
+  overflow: visible; /* por si algún navegador aplica hidden por defecto */
 }
 
 .pill-input {
@@ -23,6 +25,14 @@
   padding: 16px;
   box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.02);
   transition: box-shadow 0.2s ease;
+
+  /* ring interior para evitar que se corte en lados */
+  &:focus-within {
+    box-shadow:
+      inset 0 0 0 2px #1563ff,          /* borde principal accesible */
+      inset 0 0 0 4px rgba(21, 99, 255, 0.15),
+      inset 0 0 0 1px rgba(0, 0, 0, 0.02); /* conserva tu sutil borde inicial */
+  }
 
   input {
     flex: 1;
@@ -52,14 +62,14 @@
     background: transparent;
     cursor: pointer;
     padding: 4px;
+    border-radius: 8px; /* mejora foco visible */
 
+    /* cambia outline por ring interior para que no se corte */
     &:focus-visible {
-      outline: 2px solid #1563ff;
-      outline-offset: 2px;
+      outline: none;
+      box-shadow: inset 0 0 0 2px #1563ff;
     }
   }
-
-  &:focus-within { box-shadow: 0 0 0 3px rgba(21, 99, 255, 0.15); }
 }
 
 .row-end {
@@ -122,4 +132,10 @@
 @media (prefers-reduced-motion: reduce) {
   .pill-input,
   .primary-button { transition: none; }
+}
+
+.success {
+  color: #0f9d58;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
 }

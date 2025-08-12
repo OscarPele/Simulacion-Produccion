@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FiMail, FiLock, FiEye, FiEyeOff } from 'react-icons/fi';
+import { FiUser, FiLock, FiEye, FiEyeOff } from 'react-icons/fi';
 import './LoginForm.scss';
+import { useNavigate } from 'react-router-dom';
 
-type LoginRequest = { email: string; password: string };
+type LoginRequest = { usernameOrEmail: string; password: string };
 type LoginResponse = { token: string; refreshToken?: string };
 
 type Props = {
@@ -15,9 +16,10 @@ export default function LoginForm({ onSuccess, onGoRegister }: Props) {
   const { t } = useTranslation('LoginForm');
 
   const API = (import.meta.env.VITE_API_BASE_URL as string) ?? '';
-  const endpoint = `${API.replace(/\/$/, '')}/auth/login`;
+  const endpoint = `${API.replace(/\/$/, '').trim()}/auth/login`;
+  const navigate = useNavigate();
 
-  const [form, setForm] = useState<LoginRequest>({ email: '', password: '' });
+  const [form, setForm] = useState<LoginRequest>({ usernameOrEmail: '', password: '' });
   const [showPwd, setShowPwd] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -27,26 +29,101 @@ export default function LoginForm({ onSuccess, onGoRegister }: Props) {
     setForm((f) => ({ ...f, [name]: value }));
   };
 
+  const readBodySafely = async (res: Response): Promise<any> => {
+    const ct = res.headers.get('content-type') || '';
+    if (ct.includes('application/json')) {
+      try { return await res.json(); } catch { return null; }
+    }
+    try { return await res.text(); } catch { return null; }
+  };
+
+  const pickFirstFieldError = (obj: any): string | null => {
+    if (!obj || typeof obj !== 'object' || Array.isArray(obj)) return null;
+    const values = Object.values(obj);
+    if (values.length === 0) return null;
+    const first = values[0];
+    return typeof first === 'string' ? first : null;
+  };
+
+  // Solo depende del campo que valida
+  const clientError = useMemo(() => {
+    if (!form.usernameOrEmail.trim()) {
+      return t('usernameOrEmailRequired') || 'Username or email is required';
+    }
+    return null;
+  }, [form.usernameOrEmail, t]);
+
+  const canSubmit = useMemo(() => !clientError && !loading, [clientError, loading]);
+
+  function saveTokens(data: LoginResponse) {
+    localStorage.setItem('accessToken', data.token);
+    if (data.refreshToken) localStorage.setItem('refreshToken', data.refreshToken);
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (loading) return;
+    if (clientError) {
+      setErrorMsg(clientError);
+      return;
+    }
+
     setErrorMsg(null);
     setLoading(true);
+
     try {
+      const payload: LoginRequest = {
+        usernameOrEmail: form.usernameOrEmail.trim(),
+        password: form.password,
+      };
+
       const res = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
+        body: JSON.stringify(payload),
       });
+
+      const body = await readBodySafely(res);
+
       if (!res.ok) {
-        setErrorMsg(`Error ${res.status}`);
+        const code = (body && body.code) || '';
+        const message = (body && body.message) || '';
+        const errorName = (body && body.error) || '';
+
+        const isInvalid =
+          res.status === 401 ||
+          code === 'INVALID_CREDENTIALS' ||
+          message === 'INVALID_CREDENTIALS' ||
+          errorName === 'InvalidCredentialsException';
+
+        if (isInvalid) {
+          setErrorMsg(t('invalidCredentials') || 'Invalid credentials');
+          return;
+        }
+
+        if (res.status === 400) {
+          const firstFieldError = pickFirstFieldError(body);
+          if (firstFieldError) {
+            setErrorMsg(firstFieldError);
+            return;
+          }
+        }
+
+        if (res.status >= 500) {
+          setErrorMsg(t('serverError') || `Server error (${res.status}) - please try again later`);
+        } else {
+          setErrorMsg(t('errorWithCode', { code: res.status }));
+        }
         return;
       }
-      const data: LoginResponse = await res.json();
-      localStorage.setItem('access_token', data.token);
-      if (data.refreshToken) localStorage.setItem('refresh_token', data.refreshToken);
+
+      const data: LoginResponse = body;
+      saveTokens(data);
+
       onSuccess?.(data);
-      setForm({ email: '', password: '' });
+      setForm({ usernameOrEmail: '', password: '' });
+      setErrorMsg(null); // limpiar posibles mensajes antes de navegar
+      navigate('/main');
     } catch {
       setErrorMsg(t('errorConnecting'));
     } finally {
@@ -59,18 +136,18 @@ export default function LoginForm({ onSuccess, onGoRegister }: Props) {
       <fieldset className="fieldset" disabled={loading}>
         <div className="pill-input">
           <span className="left-icon" aria-hidden>
-            <FiMail />
+            <FiUser />
           </span>
           <input
-            id="email"
-            name="email"
-            type="email"
-            autoComplete="email"
-            placeholder={t('emailPlaceholder')}
-            value={form.email}
+            id="usernameOrEmail"
+            name="usernameOrEmail"
+            type="text"
+            autoComplete="username"
+            placeholder={t('usernameOrEmailPlaceholder')}
+            value={form.usernameOrEmail}
             onChange={handleChange}
             required
-            aria-invalid={!!errorMsg}
+            aria-invalid={!!(errorMsg && !form.usernameOrEmail.trim())}
           />
         </div>
 
@@ -88,7 +165,7 @@ export default function LoginForm({ onSuccess, onGoRegister }: Props) {
             onChange={handleChange}
             required
             minLength={8}
-            aria-invalid={!!errorMsg}
+            aria-invalid={!!(errorMsg && form.password.length < 8)}
           />
           <button
             type="button"
@@ -106,7 +183,7 @@ export default function LoginForm({ onSuccess, onGoRegister }: Props) {
           </p>
         )}
 
-        <button type="submit" className="primary-button" disabled={loading}>
+        <button type="submit" className="primary-button" disabled={!canSubmit}>
           {loading ? t('loggingIn') : t('login')}
         </button>
 
