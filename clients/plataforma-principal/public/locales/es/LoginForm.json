@@ -1,5 +1,5 @@
 {
-  "emailPlaceholder": "Correo electrónico",
+  "usernameOrEmailPlaceholder": "Nombre de usuario o email",
   "passwordPlaceholder": "Contraseña",
   "showPassword": "Mostrar contraseña",
   "hidePassword": "Ocultar contraseña",
@@ -8,5 +8,8 @@
   "loggingIn": "Entrando…",
   "dontHaveAccount": "¿No tienes una cuenta?",
   "signUp": "Regístrate",
-  "errorWithCode": "Error {{code}}"
+  "errorWithCode": "Error {{code}}",
+  "invalidCredentials": "Usuario/email o contraseña incorrectos",
+  "usernameOrEmailRequired": "El nombre de usuario o el email es obligatorio",
+  "serverError": "Error del servidor - inténtalo de nuevo más tarde"
 }

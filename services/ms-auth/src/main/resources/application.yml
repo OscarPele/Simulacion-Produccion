@@ -16,9 +16,6 @@ spring:
       ddl-auto: update
     open-in-view: false
 
-server:
-  port: 8081
-
 management:
   endpoints:
     web:
@@ -31,15 +28,27 @@ management:
 logging:
   level:
     root: INFO
-    com.oscar.proyecto: DEBUG
+    com.oscar.proyecto: INFO
+    org.springframework.web: ERROR
+    org.springframework.security: ERROR
+    org.hibernate.SQL: ERROR
+
+server:
+  port: 8081
+  address: 0.0.0.0
+  error:
+    include-message: always
+    include-binding-errors: never
+    include-stacktrace: never
+
 
 app:
   jwt:
-    secret: "078bc5157ddee8a671d54eaa43bc197fcf02e92f8ec8696a2526b7a0a2f7a8410c8d335ccad6e4df2fc840752b5fcc51c85eb82d0659cce61c1ac81eb07cfbde
-"
-    expiration-minutes: 60
+    secret: ${APP_JWT_SECRET:078bc5157ddee8a671d54eaa43bc197fcf02e92f8ec8696a2526b7a0a2f7a8410c8d335ccad6e4df2fc840752b5fcc51c85eb82d0659cce61c1ac81eb07cfbde}
+    expiration-minutes: ${APP_JWT_EXPIRATION_MINUTES:60}
+
 
 cors:
-  allowed-origins: "http://localhost:3000,http://localhost:8080"
+  allowed-origins: ""
   allowed-methods: "GET,POST,PUT,DELETE,OPTIONS"
   allowed-headers: "*"

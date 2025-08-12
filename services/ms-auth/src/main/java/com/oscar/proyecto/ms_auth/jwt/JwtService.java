@@ -1,6 +1,10 @@
 package com.oscar.proyecto.ms_auth.jwt;
 
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -19,7 +23,15 @@ public class JwtService {
     public JwtService(
             @Value("${app.jwt.secret}") String secret,
             @Value("${app.jwt.expiration-minutes}") long expirationMinutes) {
-        this.key = Keys.hmacShaKeyFor(secret.getBytes());
+
+        // Soporta secreto en Base64 o en texto plano (≥ 32 bytes para HS256).
+        byte[] keyBytes;
+        try {
+            keyBytes = Decoders.BASE64.decode(secret);
+        } catch (IllegalArgumentException ignored) {
+            keyBytes = secret.getBytes();
+        }
+        this.key = Keys.hmacShaKeyFor(keyBytes);
         this.expirationSeconds = expirationMinutes * 60;
     }
 
@@ -32,6 +44,19 @@ public class JwtService {
                 .setExpiration(Date.from(now.plusSeconds(expirationSeconds)))
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
+    }
+
+    /** Devuelve Claims si el token es válido; si no, null. */
+    public Claims parseClaims(String token) {
+        try {
+            return Jwts.parserBuilder()
+                    .setSigningKey(key)
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+        } catch (JwtException | IllegalArgumentException e) {
+            return null;
+        }
     }
 
     public long getExpirationSeconds() {

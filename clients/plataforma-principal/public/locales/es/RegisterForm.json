@@ -7,8 +7,16 @@
   "passwordHint": "Mínimo 8 caracteres (mayúsculas, minúsculas y números).",
   "errorConnecting": "No se pudo conectar con el servidor",
   "errorWithCode": "Error {{code}}",
+  "usernameTaken": "El nombre de usuario ya existe",
+  "emailTaken": "El correo electrónico ya está registrado",
+  "passwordTooShort": "La contraseña debe tener al menos 8 caracteres",
+  "registeredSuccessfully": "Registrado correctamente",
   "createAccount": "Crear cuenta",
   "creatingAccount": "Creando cuenta…",
   "alreadyHaveAccount": "¿Ya tienes una cuenta?",
-  "logIn": "Iniciar sesión"
+  "logIn": "Iniciar sesión",
+  "usernameRequired": "El nombre de usuario es obligatorio",
+  "emailRequired": "El correo electrónico es obligatorio",
+  "invalidForm": "Revisa los campos del formulario",
+  "serverError": "Error del servidor — inténtalo de nuevo más tarde"
 }
