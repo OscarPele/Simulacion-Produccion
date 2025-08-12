@@ -52,7 +52,7 @@ public class UserService {
     public void changePassword(Long id, String currentPassword, String newPassword) {
         var user = requireById(id);
         if (!encoder.matches(currentPassword, user.getPasswordHash())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Current password is incorrect");
+            throw new com.oscar.proyecto.ms_auth.exception.CurrentPasswordIncorrectException();
         }
         user.setPasswordHash(encoder.encode(newPassword));
         userRepo.save(user);

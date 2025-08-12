@@ -44,6 +44,13 @@ public class GlobalExceptionHandler {
         return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, "UNEXPECTED_ERROR");
     }
 
+    @ExceptionHandler(CurrentPasswordIncorrectException.class)
+    public ResponseEntity<Map<String, String>> handleCurrentPwd(CurrentPasswordIncorrectException ex) {
+        System.out.println(ex.getClass().getName() + ": " + ex.getMessage());
+        return buildResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
+
     private ResponseEntity<Map<String, String>> buildResponse(HttpStatus status, String message) {
         return ResponseEntity.status(status).body(Map.of("code", message));
     }

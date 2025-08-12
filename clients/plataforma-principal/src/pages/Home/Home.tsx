@@ -1,11 +1,12 @@
 import { useRef, useState } from 'react';
-import { FaCog } from 'react-icons/fa';
 import { useTranslation } from 'react-i18next';
 
 import './Home.scss';
-import LoginForm from '../../components/Login/LoginForm';
-import RegisterForm from '../../components/Register/RegisterForm';
+import LoginForm from './components/Login/LoginForm';
+import RegisterForm from './components/Register/RegisterForm';
 import dashboardImg from '../../assets/dashboard.png';
+import Logo from '../../components/common/Logo/Logo';
+import LangSwitcher from '../../components/common/LangSwitcher/LangSwitcher';
 
 type Mode = 'login' | 'register';
 type Anim = 'idle' | 'expanding' | 'closing';
@@ -70,17 +71,7 @@ export default function Home() {
         />
 
         <div className="center-content">
-          <div className="company-logo">
-            <FaCog className="company-gear" />
-            <div className="logo-content">
-              <div className="company-header">
-                <h1 className="company-acronym">O.P.S.</h1>
-              </div>
-              <p className="company-complete-name">
-                {t('company.fullName')}
-              </p>
-            </div>
-          </div>
+          <Logo/>
 
           <div>
             <h1>{t(`titles.${mode}.title`)}</h1>
@@ -96,24 +87,8 @@ export default function Home() {
           </div>
 
           {/* Selector de idioma */}
-          <div className="lang-switcher" role="group" aria-label={t('lang.switch')}>
-            <button
-              type="button"
-              onClick={() => i18n.changeLanguage('es')}
-              aria-pressed={i18n.language.startsWith('es')}
-              className={i18n.language.startsWith('es') ? 'active' : ''}
-            >
-              {t('lang.es')}
-            </button>
-            <button
-              type="button"
-              onClick={() => i18n.changeLanguage('en')}
-              aria-pressed={i18n.language.startsWith('en')}
-              className={i18n.language.startsWith('en') ? 'active' : ''}
-            >
-              {t('lang.en')}
-            </button>
-          </div>
+          <LangSwitcher/>
+
         </div>
       </div>
 

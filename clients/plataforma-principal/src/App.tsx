@@ -1,8 +1,7 @@
 import { Routes, Route } from 'react-router-dom';
 import Home from './pages/Home/Home';
 import MainPage from './pages/Main/MainPage';
-import ProfilePage from './pages/Profile/ProfilePage';
-import PrivateLayout from './components/PrivateLayout';
+import PrivateLayout from './routes/PrivateLayout';
 
 export default function App() {
   return (
@@ -13,7 +12,6 @@ export default function App() {
       {/* Grupo de rutas privadas */}
       <Route element={<PrivateLayout />}>
         <Route path="/main" element={<MainPage />} />
-        <Route path="/profile" element={<ProfilePage />} />
       </Route>
     </Routes>
   );

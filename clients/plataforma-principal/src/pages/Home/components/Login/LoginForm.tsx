@@ -122,7 +122,7 @@ export default function LoginForm({ onSuccess, onGoRegister }: Props) {
 
       onSuccess?.(data);
       setForm({ usernameOrEmail: '', password: '' });
-      setErrorMsg(null); // limpiar posibles mensajes antes de navegar
+      setErrorMsg(null);
       navigate('/main');
     } catch {
       setErrorMsg(t('errorConnecting'));
