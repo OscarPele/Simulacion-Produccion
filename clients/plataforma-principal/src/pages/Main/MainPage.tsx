@@ -30,8 +30,7 @@ export default function MainPage() {
       </nav>
 
       <main className="main-content">
-        <h1>Comprovación.</h1>
-        
+
         <div className={`auth-flag ${isValid ? 'success' : 'warning'}`}>
           <div className="auth-flag__icon">
             {isValid ? <FiCheckCircle /> : <FiAlertTriangle />}

@@ -57,6 +57,7 @@
             <scope>test</scope>
         </dependency>
 
+
         <!-- Persistencia con JPA/Hibernate -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

@@ -16,18 +16,6 @@ public class UserController {
         this.users = users;
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<UserResponse> getById(@PathVariable Long id) {
-        var user = users.requireById(id);
-        return ResponseEntity.ok(new UserResponse(
-                user.getId(),
-                user.getUsername(),
-                user.getEmail(),
-                user.isEnabled(),
-                user.getCreatedAt()
-        ));
-    }
-
     @PutMapping("/{id}/password")
     public ResponseEntity<Void> changePassword(@PathVariable Long id,
                                                @Valid @RequestBody ChangePasswordRequest body) {
