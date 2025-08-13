@@ -1,9 +1,12 @@
 package com.oscar.proyecto.ms_auth.user;
 
-import com.oscar.proyecto.ms_auth.api.dto.UserResponse;
+import com.oscar.proyecto.ms_auth.exception.ForbiddenOperationException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -17,18 +20,26 @@ public class UserController {
     }
 
     @PutMapping("/{id}/password")
-    public ResponseEntity<Void> changePassword(@PathVariable Long id,
+    public ResponseEntity<Void> changePassword(@PathVariable("id") Long id,
                                                @Valid @RequestBody ChangePasswordRequest body) {
-        users.changePassword(id, body.getCurrentPassword(), body.getNewPassword());
+        // Usuario objetivo (por ID de la ruta)
+        var target = users.requireById(id);
+
+        // Usuario autenticado (establecido por  filtro JWT: principal = username)
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String currentUsername = auth.getName();
+
+        // Solo el dueño del recurso
+        if (!target.getUsername().equals(currentUsername)) {
+            throw new ForbiddenOperationException();
+        }
+
+        users.changePassword(id, body.currentPassword(), body.newPassword());
         return ResponseEntity.noContent().build();
     }
 
-    public static class ChangePasswordRequest {
-        @NotBlank private String currentPassword;
-        @NotBlank private String newPassword;
-        public String getCurrentPassword() { return currentPassword; }
-        public void setCurrentPassword(String currentPassword) { this.currentPassword = currentPassword; }
-        public String getNewPassword() { return newPassword; }
-        public void setNewPassword(String newPassword) { this.newPassword = newPassword; }
-    }
+    public record ChangePasswordRequest(
+            @NotBlank String currentPassword,
+            @NotBlank String newPassword
+    ) {}
 }

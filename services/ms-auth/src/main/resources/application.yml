@@ -33,6 +33,9 @@ logging:
     org.springframework.security: ERROR
     org.hibernate.SQL: ERROR
 
+
+
+
 server:
   port: 8081
   address: 0.0.0.0
@@ -41,11 +44,18 @@ server:
     include-binding-errors: never
     include-stacktrace: never
 
-
 app:
   jwt:
-    secret: ${APP_JWT_SECRET:078bc5157ddee8a671d54eaa43bc197fcf02e92f8ec8696a2526b7a0a2f7a8410c8d335ccad6e4df2fc840752b5fcc51c85eb82d0659cce61c1ac81eb07cfbde}
-    expiration-minutes: ${APP_JWT_EXPIRATION_MINUTES:60}
+    issuer: ms-auth
+    audience: api
+    private-key-location: classpath:jwt/private.pem
+    public-key-location: classpath:jwt/public.pem
+    expiration-minutes: 60
+    refresh-expiration-days: ${APP_JWT_REFRESH_EXPIRATION_DAYS:7}
+    max-sessions-per-user: 5
+
+security:
+  permit-all: /auth/register,/auth/login,/auth/refresh,/auth/logout,/auth/logout-all,/actuator/health,/actuator/info
 
 
 cors:

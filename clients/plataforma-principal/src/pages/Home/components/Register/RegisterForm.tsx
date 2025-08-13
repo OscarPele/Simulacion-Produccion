@@ -1,7 +1,9 @@
+// src/components/Register/RegisterForm.tsx
 import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FiUser, FiMail, FiLock, FiEye, FiEyeOff } from 'react-icons/fi';
 import '../Login/LoginForm.scss';
+import { apiUrl } from '../../../../api/config'; // <- usa apiUrl
 
 type RegisterRequest = { username: string; email: string; password: string };
 
@@ -11,9 +13,7 @@ type Props = {
 
 export default function RegisterForm({ onGoLogin }: Props) {
   const { t } = useTranslation('RegisterForm');
-
-  const API = (import.meta.env.VITE_API_BASE_URL as string) ?? '';
-  const endpoint = `${API.replace(/\/$/, '').trim()}/auth/register`;
+  const endpoint = apiUrl('/auth/register'); // <- coherente con config/api
 
   const [form, setForm] = useState<RegisterRequest>({ username: '', email: '', password: '' });
   const [showPwd, setShowPwd] = useState(false);
@@ -32,14 +32,6 @@ export default function RegisterForm({ onGoLogin }: Props) {
       try { return await res.json(); } catch { return null; }
     }
     try { return await res.text(); } catch { return null; }
-  };
-
-  const pickFirstFieldError = (obj: any): string | null => {
-    if (!obj || typeof obj !== 'object' || Array.isArray(obj)) return null;
-    const values = Object.values(obj);
-    if (values.length === 0) return null;
-    const first = values[0];
-    return typeof first === 'string' ? first : null;
   };
 
   const clientError = useMemo(() => {
@@ -73,46 +65,28 @@ export default function RegisterForm({ onGoLogin }: Props) {
 
       const res = await fetch(endpoint, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
         body: JSON.stringify(payload),
       });
 
       const body = await readBodySafely(res);
 
       if (!res.ok) {
-        const code = (body && body.code) || '';
-        const message = (body && body.message) || '';
-        const errorName = (body && body.error) || '';
-
-        const isUsernameExists =
-          code === 'USERNAME_EXISTS' ||
-          message === 'USERNAME_EXISTS' ||
-          errorName === 'UsernameAlreadyExistsException' ||
-          res.status === 409 && /username/i.test(JSON.stringify(body || ''));
-
-        const isEmailExists =
-          code === 'EMAIL_EXISTS' ||
-          message === 'EMAIL_EXISTS' ||
-          errorName === 'EmailAlreadyExistsException' ||
-          res.status === 409 && /email/i.test(JSON.stringify(body || ''));
-
-        if (isUsernameExists) {
-          setErrorMsg(t('usernameTaken') || 'El nombre de usuario ya existe');
-          return;
-        }
-        if (isEmailExists) {
-          setErrorMsg(t('emailTaken') || 'El email ya está registrado');
-          return;
-        }
+        const code = body?.code ?? '';
 
         if (res.status === 400) {
-          const firstFieldError = pickFirstFieldError(body);
-          if (firstFieldError) {
-            setErrorMsg(firstFieldError);
+          if (code === 'USERNAME_EXISTS') {
+            setErrorMsg(t('usernameTaken') || 'El nombre de usuario ya existe');
             return;
           }
-          setErrorMsg(t('invalidForm') || t('errorWithCode', { code: res.status }));
-          return;
+          if (code === 'EMAIL_EXISTS') {
+            setErrorMsg(t('emailTaken') || 'El email ya está registrado');
+            return;
+          }
+          if (code === 'VALIDATION_ERROR') {
+            setErrorMsg(t('invalidForm') || 'Formulario inválido');
+            return;
+          }
         }
 
         if (res.status >= 500) {
@@ -142,9 +116,7 @@ export default function RegisterForm({ onGoLogin }: Props) {
     <form className="login-card" onSubmit={handleSubmit} noValidate>
       <fieldset className="fieldset" disabled={loading}>
         <div className="pill-input">
-          <span className="left-icon" aria-hidden>
-            <FiUser />
-          </span>
+          <span className="left-icon" aria-hidden><FiUser /></span>
           <input
             id="username"
             name="username"
@@ -160,9 +132,7 @@ export default function RegisterForm({ onGoLogin }: Props) {
         </div>
 
         <div className="pill-input">
-          <span className="left-icon" aria-hidden>
-            <FiMail />
-          </span>
+          <span className="left-icon" aria-hidden><FiMail /></span>
           <input
             id="email"
             name="email"
@@ -177,9 +147,7 @@ export default function RegisterForm({ onGoLogin }: Props) {
         </div>
 
         <div className="pill-input">
-          <span className="left-icon" aria-hidden>
-            <FiLock />
-          </span>
+          <span className="left-icon" aria-hidden><FiLock /></span>
           <input
             id="password"
             name="password"
@@ -206,17 +174,8 @@ export default function RegisterForm({ onGoLogin }: Props) {
           {t('passwordHint')}
         </small>
 
-        {errorMsg && (
-          <p role="alert" aria-live="polite" className="error">
-            {errorMsg}
-          </p>
-        )}
-
-        {successMsg && (
-          <p role="alert" aria-live="polite" className="success">
-            {successMsg}
-          </p>
-        )}
+        {errorMsg && <p role="alert" aria-live="polite" className="error">{errorMsg}</p>}
+        {successMsg && <p role="alert" aria-live="polite" className="success">{successMsg}</p>}
 
         <button type="submit" className="primary-button" disabled={!canSubmit}>
           {loading ? t('creatingAccount') : t('createAccount')}
@@ -227,10 +186,7 @@ export default function RegisterForm({ onGoLogin }: Props) {
           <a
             href="#login"
             className="signup-link"
-            onClick={(e) => {
-              e.preventDefault();
-              onGoLogin?.(e);
-            }}
+            onClick={(e) => { e.preventDefault(); onGoLogin?.(e); }}
           >
             {t('logIn')}
           </a>

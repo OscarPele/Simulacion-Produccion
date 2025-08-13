@@ -1,13 +1,13 @@
 package com.oscar.proyecto.ms_auth.user;
 
+import com.oscar.proyecto.ms_auth.exception.CurrentPasswordIncorrectException;
 import com.oscar.proyecto.ms_auth.exception.EmailAlreadyExistsException;
 import com.oscar.proyecto.ms_auth.exception.InvalidCredentialsException;
 import com.oscar.proyecto.ms_auth.exception.UsernameAlreadyExistsException;
-import org.springframework.http.HttpStatus;
+import com.oscar.proyecto.ms_auth.exception.UserNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class UserService {
@@ -15,7 +15,8 @@ public class UserService {
     private final PasswordEncoder encoder;
 
     public UserService(UserRepository repo, PasswordEncoder encoder) {
-        this.userRepo = repo; this.encoder = encoder;
+        this.userRepo = repo;
+        this.encoder = encoder;
     }
 
     @Transactional
@@ -44,15 +45,14 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public User requireById(Long id) {
-        return userRepo.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+        return userRepo.findById(id).orElseThrow(UserNotFoundException::new);
     }
 
     @Transactional
     public void changePassword(Long id, String currentPassword, String newPassword) {
         var user = requireById(id);
         if (!encoder.matches(currentPassword, user.getPasswordHash())) {
-            throw new com.oscar.proyecto.ms_auth.exception.CurrentPasswordIncorrectException();
+            throw new CurrentPasswordIncorrectException();
         }
         user.setPasswordHash(encoder.encode(newPassword));
         userRepo.save(user);

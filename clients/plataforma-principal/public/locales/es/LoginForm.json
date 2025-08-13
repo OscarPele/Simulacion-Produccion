@@ -11,5 +11,6 @@
   "errorWithCode": "Error {{code}}",
   "invalidCredentials": "Usuario/email o contraseña incorrectos",
   "usernameOrEmailRequired": "El nombre de usuario o el email es obligatorio",
-  "serverError": "Error del servidor - inténtalo de nuevo más tarde"
+  "serverError": "Error del servidor - inténtalo de nuevo más tarde",
+  "invalidForm": "Revisa los campos del formulario"
 }
