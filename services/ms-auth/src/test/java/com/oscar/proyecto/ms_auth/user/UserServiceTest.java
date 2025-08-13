@@ -1,9 +1,6 @@
 package com.oscar.proyecto.ms_auth.user;
 
-import com.oscar.proyecto.ms_auth.exception.CurrentPasswordIncorrectException;
-import com.oscar.proyecto.ms_auth.exception.EmailAlreadyExistsException;
-import com.oscar.proyecto.ms_auth.exception.InvalidCredentialsException;
-import com.oscar.proyecto.ms_auth.exception.UsernameAlreadyExistsException;
+import com.oscar.proyecto.ms_auth.exception.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -131,9 +128,7 @@ class UserServiceTest {
     void requireById_throws_404_when_missing() {
         when(repo.findById(999L)).thenReturn(Optional.empty());
 
-        ResponseStatusException ex = assertThrows(ResponseStatusException.class,
-                () -> service.requireById(999L));
-        assertEquals(HttpStatus.NOT_FOUND, ex.getStatusCode());
+        UserNotFoundException ex = assertThrows(UserNotFoundException.class, () -> service.requireById(999L));
     }
 
     // -------- changePassword --------

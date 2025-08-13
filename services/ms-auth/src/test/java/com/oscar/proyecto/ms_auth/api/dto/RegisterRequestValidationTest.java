@@ -14,22 +14,14 @@ class RegisterRequestValidationTest {
 
     @Test
     void invalid_fields_trigger_violations() {
-        var dto = new RegisterRequest();
-        dto.setUsername("");
-        dto.setEmail("not-an-email");
-        dto.setPassword("123");
-
+        var dto = new RegisterRequest("", "not-an-email", "123");
         Set<ConstraintViolation<RegisterRequest>> v = validator.validate(dto);
         assertFalse(v.isEmpty());
     }
 
     @Test
     void valid_fields_pass() {
-        var dto = new RegisterRequest();
-        dto.setUsername("alice");
-        dto.setEmail("alice@mail.com");
-        dto.setPassword("Secret123");
-
+        var dto = new RegisterRequest("alice", "alice@mail.com", "Secret123");
         Set<ConstraintViolation<RegisterRequest>> v = validator.validate(dto);
         assertTrue(v.isEmpty());
     }

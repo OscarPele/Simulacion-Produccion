@@ -1,1 +1,3 @@
 services/ms-auth/.env # por si acaso
+services/ms-auth/src/main/resources/jwt/private.pem
+*.pem

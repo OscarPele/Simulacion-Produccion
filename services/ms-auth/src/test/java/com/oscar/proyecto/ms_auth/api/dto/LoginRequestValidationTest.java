@@ -11,17 +11,13 @@ class LoginRequestValidationTest {
 
     @Test
     void blank_is_invalid() {
-        var dto = new LoginRequest();
-        dto.setUsernameOrEmail("");
-        dto.setPassword("");
+        var dto = new LoginRequest("", "");
         assertFalse(validator.validate(dto).isEmpty());
     }
 
     @Test
     void ok_when_filled() {
-        var dto = new LoginRequest();
-        dto.setUsernameOrEmail("alice");
-        dto.setPassword("Secret123");
+        var dto = new LoginRequest("alice", "Secret123");
         assertTrue(validator.validate(dto).isEmpty());
     }
 }
