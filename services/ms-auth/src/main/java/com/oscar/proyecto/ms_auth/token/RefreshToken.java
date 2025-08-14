@@ -7,6 +7,8 @@ import java.time.Instant;
 @Entity
 @Table(name = "refresh_tokens",
         indexes = {
+                // Mantenemos los índices declarados para no romper generación/validación.
+                // Si usas migraciones, podrás eliminarlos en el paso final.
                 @Index(name = "idx_rt_token", columnList = "token", unique = true),
                 @Index(name = "idx_rt_token_hash", columnList = "token_hash", unique = true),
                 @Index(name = "idx_rt_user", columnList = "user_id"),
@@ -22,12 +24,11 @@ public class RefreshToken {
     @JoinColumn(name = "user_id", nullable = false, foreignKey = @ForeignKey(name = "fk_rt_user"))
     private User user;
 
-    // Plaintext temporal (compatibilidad). Se eliminará en el paso final.
-    @Column(nullable = false, unique = true, length = 200)
+    @Column(name = "token", nullable = true, unique = false, length = 200)
     private String token;
 
     // Hash base64url(SHA-256(token)) – campo de validación real
-    @Column(name = "token_hash", unique = true, length = 64)
+    @Column(name = "token_hash", unique = true, length = 64, nullable = false)
     private String tokenHash;
 
     @Column(nullable = false)

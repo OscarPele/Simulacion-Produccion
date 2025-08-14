@@ -1,5 +1,4 @@
-// src/api/users/userClient.ts
-import { apiUrl } from '../config';
+import { authApiUrl } from '../config'; 
 import { authFetch } from '../token/authClient';
 
 export type ChangePasswordResult =
@@ -12,7 +11,7 @@ export async function changePassword(
   newPassword: string
 ): Promise<ChangePasswordResult> {
   try {
-    const res = await authFetch(apiUrl(`/users/${userId}/password`), {
+    const res = await authFetch(authApiUrl(`/users/${userId}/password`), {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ currentPassword, newPassword }),

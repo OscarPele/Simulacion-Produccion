@@ -2,7 +2,6 @@ package com.oscar.proyecto.ms_auth.api;
 
 import com.oscar.proyecto.ms_auth.api.dto.*;
 import com.oscar.proyecto.ms_auth.jwt.JwtService;
-import com.oscar.proyecto.ms_auth.token.RefreshToken;
 import com.oscar.proyecto.ms_auth.token.RefreshTokenService;
 import com.oscar.proyecto.ms_auth.user.User;
 import com.oscar.proyecto.ms_auth.user.UserService;
@@ -116,13 +115,14 @@ public class AuthController {
                 Map.of("uid", user.getId())
         );
 
-        RefreshToken rt = refreshTokenService.create(user);
+        // Crear refresh (devuelve solo el plaintext para el cliente)
+        RefreshTokenService.IssuedRefresh issued = refreshTokenService.create(user);
 
         return ResponseEntity.ok(new TokenResponse(
                 "Bearer",
                 accessToken,
                 jwtService.getExpirationSeconds(),
-                rt.getToken(),
+                issued.plain(),
                 refreshTokenService.getRefreshExpirationSeconds()
         ));
     }
@@ -141,7 +141,7 @@ public class AuthController {
                             examples = @ExampleObject(
                                     value = """
                                             {
-                                              "refreshToken": "eyJhbGciOiJSUzI1NiIsInR5cCI6..."
+                                              "refreshToken": "c29tZS1iYXNlNjR1cmwtcmFuZG9tLXRva2Vu..."
                                             }
                                             """
                             )
@@ -166,7 +166,7 @@ public class AuthController {
                     "Bearer",
                     newAccessToken,
                     jwtService.getExpirationSeconds(),
-                    result.newRefresh().getToken(),
+                    result.newRefresh().plain(),
                     refreshTokenService.getRefreshExpirationSeconds()
             ));
         } catch (ResponseStatusException ex) {
@@ -184,7 +184,7 @@ public class AuthController {
                             examples = @ExampleObject(
                                     value = """
                                             {
-                                              "refreshToken": "eyJhbGciOiJSUzI1NiIsInR5cCI6..."
+                                              "refreshToken": "c29tZS1iYXNlNjR1cmwtcmFuZG9tLXRva2Vu..."
                                             }
                                             """
                             )
@@ -210,7 +210,7 @@ public class AuthController {
                             examples = @ExampleObject(
                                     value = """
                                             {
-                                              "refreshToken": "eyJhbGciOiJSUzI1NiIsInR5cCI6..."
+                                              "refreshToken": "c29tZS1iYXNlNjR1cmwtcmFuZG9tLXRva2Vu..."
                                             }
                                             """
                             )
@@ -221,8 +221,8 @@ public class AuthController {
     @PostMapping("/logout-all")
     public ResponseEntity<Void> logoutAll(@Valid @RequestBody RefreshTokenRequest request) {
         try {
-            var user = refreshTokenService.validateAndGetUserRef(request.refreshToken());
-            refreshTokenService.revokeAllByUserId(user.id());
+            var userRef = refreshTokenService.validateAndGetUserRef(request.refreshToken());
+            refreshTokenService.revokeAllByUserId(userRef.id());
         } catch (Exception ignored) { /* Idem: no filtramos info */ }
         return ResponseEntity.noContent().build();
     }

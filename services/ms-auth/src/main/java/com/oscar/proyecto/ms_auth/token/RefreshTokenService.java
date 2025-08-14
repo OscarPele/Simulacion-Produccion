@@ -21,34 +21,46 @@ public class RefreshTokenService {
     private final RefreshTokenRepository repository;
     private final int refreshDays;
     private final int maxSessionsPerUser;
+    private final boolean persistPlaintext; // <-- flag compat
     private final SecureRandom secureRandom = new SecureRandom();
 
     public RefreshTokenService(
             RefreshTokenRepository repository,
             @Value("${app.jwt.refresh-expiration-days:7}") int refreshDays,
-            @Value("${app.jwt.max-sessions-per-user:5}") int maxSessionsPerUser) {
+            @Value("${app.jwt.max-sessions-per-user:5}") int maxSessionsPerUser,
+            @Value("${app.jwt.persist-plaintext:false}") boolean persistPlaintext) {
         this.repository = repository;
         this.refreshDays = refreshDays;
         this.maxSessionsPerUser = maxSessionsPerUser;
+        this.persistPlaintext = persistPlaintext;
     }
 
     /** DTO ligero para evitar LazyInitialization fuera del servicio */
     public record UserRef(long id, String username) {}
 
-    /** Crea refresh (plaintext + hash) y aplica cap por usuario. */
-    public RefreshToken create(com.oscar.proyecto.ms_auth.user.User user) {
+    /** Se devuelve el plaintext SOLO en la respuesta HTTP (no en DB) */
+    public record IssuedRefresh(String plain, long expiresInSeconds) {}
+
+    /** Resultado de rotación: usuario + nuevo refresh (plaintext + ttl) */
+    public record RotationResult(UserRef user, IssuedRefresh newRefresh) {}
+
+    /** Crea refresh y aplica cap por usuario. */
+    public IssuedRefresh create(com.oscar.proyecto.ms_auth.user.User user) {
         String plain = generateOpaqueToken();
         String hash = sha256Url(plain);
 
         RefreshToken rt = new RefreshToken();
         rt.setUser(user);
-        rt.setToken(plain);       // compat (se eliminará en el paso final)
+        if (persistPlaintext) { // compat opcional
+            rt.setToken(plain);
+        }
         rt.setTokenHash(hash);    // validación real
         rt.setExpiresAt(Instant.now().plus(Duration.ofDays(refreshDays)));
-        rt = repository.save(rt);
+        repository.save(rt);
 
         enforceUserSessionCap(user.getId());
-        return rt;
+
+        return new IssuedRefresh(plain, getRefreshExpirationSeconds());
     }
 
     /** Validación segura por HASH + fetch join (para /auth/refresh, /logout-all). */
@@ -63,9 +75,6 @@ public class RefreshTokenService {
         var u = rt.getUser();
         return new UserRef(u.getId(), u.getUsername());
     }
-
-    /** Resultado de rotación: usuario + nuevo refresh */
-    public record RotationResult(UserRef user, RefreshToken newRefresh) {}
 
     /** Rotar: revoca el usado (por HASH) y emite uno nuevo. */
     public RotationResult rotate(String usedRefreshPlain) {
@@ -85,23 +94,23 @@ public class RefreshTokenService {
 
         RefreshToken next = new RefreshToken();
         next.setUser(current.getUser());
-        next.setToken(nextPlain);      // compat
+        if (persistPlaintext) { // compat opcional
+            next.setToken(nextPlain);
+        }
         next.setTokenHash(nextHash);   // validación real
         next.setExpiresAt(Instant.now().plus(Duration.ofDays(refreshDays)));
-        next = repository.save(next);
+        repository.save(next);
 
         enforceUserSessionCap(current.getUser().getId());
 
-        return new RotationResult(new UserRef(current.getUser().getId(), current.getUser().getUsername()), next);
+        return new RotationResult(new UserRef(current.getUser().getId(), current.getUser().getUsername()),
+                new IssuedRefresh(nextPlain, getRefreshExpirationSeconds()));
     }
 
     /** Revoca un refresh recibido desde cliente (por HASH). */
     public void revoke(String tokenPlain) {
         String hash = sha256Url(tokenPlain);
-        repository.findByTokenHash(hash).ifPresent(rt -> {
-            rt.setRevoked(true);
-            repository.save(rt);
-        });
+        repository.findByTokenHash(hash).ifPresent(repository::delete);
     }
 
     /** Cierra sesión en todos los dispositivos del usuario. */

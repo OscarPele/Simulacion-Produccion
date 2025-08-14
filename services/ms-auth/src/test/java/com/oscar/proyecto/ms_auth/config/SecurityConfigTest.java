@@ -1,5 +1,7 @@
 package com.oscar.proyecto.ms_auth.config;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.oscar.proyecto.ms_auth.jwt.JwtService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,9 +15,13 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
+import java.util.Random;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
@@ -24,6 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *  - 200 con token válido (y el principal correcto)
  *  - 401 con token inválido
  *  - 200 en una ruta permitida (actuator/health)
+ *  - logout revoca el refresh token y ya no permite /auth/refresh (401)
  *
  * Usa H2 en memoria para evitar dependencia de Postgres.
  */
@@ -33,6 +40,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         "spring.datasource.username=sa",
         "spring.datasource.password=",
         "spring.jpa.hibernate.ddl-auto=create-drop",
+        // evitar inMemoryUser por defecto
+        "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration",
         // ruidos fuera
         "logging.level.org.springframework.security=ERROR",
         // issuer/keys para shared.security / JwtService
@@ -45,6 +54,7 @@ class SecurityConfigTest {
 
     @Autowired MockMvc mvc;
     @Autowired JwtService jwtService;
+    @Autowired ObjectMapper om;
 
     /** Endpoint protegido solo para el contexto de test */
     @RestController
@@ -88,5 +98,56 @@ class SecurityConfigTest {
     void health_is_permit_all() throws Exception {
         mvc.perform(get("/actuator/health"))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("POST /auth/logout revoca el refresh y /auth/refresh devuelve 401")
+    void logout_revokes_refresh_token_and_refresh_returns_401() throws Exception {
+        // Datos únicos por ejecución
+        int n = 10_000 + new Random().nextInt(90_000);
+        String username = "revuser" + n;
+        String email = "revuser" + n + "@test.local";
+        String password = "P4ssw0rd!";
+
+        // 1) Registro
+        mvc.perform(post("/auth/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                            { "username":"%s", "email":"%s", "password":"%s" }
+                            """.formatted(username, email, password)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.username").value(username))
+                .andExpect(jsonPath("$.email").value(email));
+
+        // 2) Login → obtener refreshToken en claro
+        var loginRes = mvc.perform(post("/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                            { "usernameOrEmail":"%s", "password":"%s" }
+                            """.formatted(username, password)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.refreshToken").exists())
+                .andReturn();
+
+        String body = loginRes.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        JsonNode json = om.readTree(body);
+        String refreshToken = json.get("refreshToken").asText();
+        assertThat(refreshToken).isNotBlank();
+
+        // 3) /auth/logout → 204 (revoca el refresh)
+        mvc.perform(post("/auth/logout")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                            {"refreshToken":"%s"}
+                            """.formatted(refreshToken)))
+                .andExpect(status().isNoContent());
+
+        // 4) Intento de /auth/refresh con el mismo refresh → 401 (revocado)
+        mvc.perform(post("/auth/refresh")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                            {"refreshToken":"%s"}
+                            """.formatted(refreshToken)))
+                .andExpect(status().isUnauthorized());
     }
 }
