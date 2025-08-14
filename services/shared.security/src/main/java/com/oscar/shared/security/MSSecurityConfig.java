@@ -1,5 +1,6 @@
 package com.oscar.shared.security;
 
+import jakarta.servlet.http.HttpServletResponse; 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -98,7 +99,6 @@ public class MSSecurityConfig {
     }
 
     // --- Cadena de seguridad común ---
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, MSJwtAuthFilter jwtFilter) throws Exception {
         http
@@ -110,9 +110,14 @@ public class MSSecurityConfig {
                 .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
                 .anyRequest().authenticated()
             )
+            .exceptionHandling(ex -> ex
+                // sin token / token inválido -> 401
+                .authenticationEntryPoint((req, res, e) -> res.sendError(HttpServletResponse.SC_UNAUTHORIZED))
+                // con token pero sin permisos -> 403
+                .accessDeniedHandler((req, res, e) -> res.sendError(HttpServletResponse.SC_FORBIDDEN))
+            )
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
             .httpBasic(AbstractHttpConfigurer::disable);
-
         return http.build();
     }
 }

@@ -24,7 +24,6 @@ import java.util.Random;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
@@ -36,6 +35,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         "app.jwt.refresh-expiration-days=1",
         // Limitar sesiones por usuario a 2 para verificar el cap
         "app.jwt.max-sessions-per-user=2",
+        // Modo final: NO persistir plaintext en BD
+        "app.jwt.persist-plaintext=false",
         // Bajar ruido de logs si hace falta:
         "logging.level.org.springframework.security=ERROR",
         "logging.level.org.hibernate.SQL=ERROR"
@@ -183,20 +184,31 @@ class AuthFlowIT {
     @Order(4)
     void revoked_refresh_cannot_be_used() throws Exception {
         log.info("== [4] Revocar un refresh y comprobar que /auth/refresh devuelve 401 ==");
-        // Tomamos cualquiera de los refresh actuales del usuario
-        List<RefreshToken> tokens = refreshRepo.findAllByUserId(userId);
-        assertThat(tokens).isNotEmpty();
-        RefreshToken toRevoke = tokens.get(0);
+
+        // 1) Generamos un refresh válido (plaintext) vía login
+        var loginRes = mvc.perform(post("/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                            { "usernameOrEmail":"%s", "password":"%s" }
+                            """.formatted(username, password)))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String rtPlain = om.readTree(loginRes.getResponse().getContentAsString()).get("refreshToken").asText();
+
+        // 2) Buscamos la entidad por HASH y la revocamos
+        String rtHash = RefreshTokenService.sha256Url(rtPlain);
+        var toRevoke = refreshRepo.findByTokenHash(rtHash).orElseThrow();
         toRevoke.setRevoked(true);
         refreshRepo.save(toRevoke);
-        log.info("Refresh revocado: {}", toRevoke.getToken().substring(0, Math.min(12, toRevoke.getToken().length())) + "...");
+        log.info("Refresh revocado (hash prefix={}...)", rtHash.substring(0, 12));
 
-        // Intento de refresh con el token revocado
+        // 3) Intento de refresh con el token revocado → 401
         mvc.perform(post("/auth/refresh")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                             { "refreshToken":"%s" }
-                            """.formatted(toRevoke.getToken())))
+                            """.formatted(rtPlain)))
                 .andExpect(status().isUnauthorized());
 
         log.info("Correcto: refresh revocado no puede usarse (401).");
@@ -219,7 +231,7 @@ class AuthFlowIT {
         refreshRepo.saveAll(tokens);
 
         long before = refreshRepo.countByUserId(userId);
-        log.info("Antes del cleanup: {} refresh tokens (todos expuestos al pasado)", before);
+        log.info("Antes del cleanup: {} refresh tokens (todos expirados en el pasado)", before);
 
         // Ejecutamos el job
         cleanup.clean();
@@ -232,7 +244,8 @@ class AuthFlowIT {
 
     @Test
     @Order(6)
-    void logout_revokes_single_refresh() throws Exception {
+    @DisplayName("logout elimina (o invalida) el refresh y /auth/refresh devuelve 401")
+    void logout_removes_refresh_token_or_makes_it_invalid() throws Exception {
         // 1) Login → obtener un refresh token propio para esta prueba
         var loginRes = mvc.perform(post("/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -259,10 +272,12 @@ class AuthFlowIT {
                                 {"refreshToken":"%s"}""".formatted(rt)))
                 .andExpect(status().isUnauthorized());
 
-        // 4) (extra) comprobar en BD que quedó revocado
-        var rtEntity = refreshRepo.findByToken(rt).orElse(null);
-        assertThat(rtEntity).as("El refresh debe existir en BD").isNotNull();
-        assertThat(rtEntity.isRevoked()).as("El refresh debe estar revocado tras /logout").isTrue();
+        // 4) (extra) comprobar en BD: según tu servicio, el refresh puede estar BORRADO.
+        String hash = RefreshTokenService.sha256Url(rt);
+        var rtEntity = refreshRepo.findByTokenHash(hash).orElse(null);
+        assertThat(rtEntity)
+                .as("Tras /logout el refresh debe estar inutilizable (normalmente eliminado en tu implementación)")
+                .isNull(); // <--- tu servicio lo borra; si algún día cambias a 'revoked', cambia esta línea
     }
 
     @Test
@@ -306,14 +321,12 @@ class AuthFlowIT {
                                 {"refreshToken":"%s"}""".formatted(rt2)))
                 .andExpect(status().isUnauthorized());
 
-        // (extra) comprobar en BD que no quedan refresh activos del usuario
+        // (extra) comprobar en BD: no deben quedar refresh activos (si los borras, también pasa)
         var remaining = refreshRepo.findAllByUserId(userId).stream()
                 .filter(rt -> !rt.isRevoked())
                 .toList();
         assertThat(remaining)
-                .as("Tras /logout-all no deben quedar refresh activos para el usuario")
+                .as("Tras /logout-all no deben quedar refresh activos para el usuario (revocados o eliminados)")
                 .isEmpty();
     }
-
-
 }

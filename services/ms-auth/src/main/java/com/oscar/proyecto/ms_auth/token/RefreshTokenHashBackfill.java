@@ -21,7 +21,6 @@ public class RefreshTokenHashBackfill {
         boolean changed = false;
         for (var rt : all) {
             if (rt.getTokenHash() == null && rt.getToken() != null) {
-                // Reutilizamos la función del servicio (evita duplicación)
                 rt.setTokenHash(RefreshTokenService.sha256Url(rt.getToken()));
                 changed = true;
             }

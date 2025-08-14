@@ -25,7 +25,6 @@ public interface RefreshTokenRepository extends JpaRepository<RefreshToken, Long
     @Query("select rt.id from RefreshToken rt where rt.user.id = :userId order by rt.createdAt asc")
     List<Long> findIdsByUserOldestFirst(@Param("userId") long userId);
 
-    // (opcional, ya existe en JpaRepository)
     void deleteAllByIdInBatch(Iterable<Long> ids);
 
     long countByUserId(long userId);

@@ -22,7 +22,7 @@
   <modules>
 
     <module>ms-auth</module>
-    <!-- <module>ms-rrhh</module> -->
+    <module>ms-hr</module>
     <!-- Ir agregando aquí más servicios -->
   </modules>
 

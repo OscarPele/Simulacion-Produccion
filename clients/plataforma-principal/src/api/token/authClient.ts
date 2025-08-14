@@ -1,6 +1,6 @@
 // src/api/token/authClient.ts
 import { tokenStore } from './tokenStore';
-import { API_BASE } from '../config';
+import { authApiUrl } from '../config'; // <-- cambiado: helper que construye URLs del ms-auth
 
 export type LoginRequest = { usernameOrEmail: string; password: string };
 export type TokenResponse = {
@@ -34,7 +34,7 @@ export class AuthClient {
   }
 
   async login(body: LoginRequest): Promise<TokenResponse> {
-    const res = await fetch(joinUrl(this.baseURL, '/auth/login'), {
+    const res = await fetch(authApiUrl('/auth/login'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
@@ -54,7 +54,7 @@ export class AuthClient {
     const rt = tokenStore.refresh;
     if (!rt) throw new Error('NO_REFRESH_TOKEN');
 
-    const res = await fetch(joinUrl(this.baseURL, '/auth/refresh'), {
+    const res = await fetch(authApiUrl('/auth/refresh'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ refreshToken: rt }),
@@ -128,7 +128,7 @@ export class AuthClient {
     tokenStore.clear();
     if (!rt) return;
     try {
-      await fetch(joinUrl(this.baseURL, '/auth/logout'), {
+      await fetch(authApiUrl('/auth/logout'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ refreshToken: rt }),
@@ -141,7 +141,7 @@ export class AuthClient {
     tokenStore.clear();
     if (!rt) return;
     try {
-      await fetch(joinUrl(this.baseURL, '/auth/logout-all'), {
+      await fetch(authApiUrl('/auth/logout-all'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ refreshToken: rt }),
@@ -152,15 +152,14 @@ export class AuthClient {
 
 /* ========= Helpers y cliente por defecto (para usar en componentes) ========= */
 
-// Cliente por defecto con la base del proyecto (API_BASE)
-export const defaultAuthClient = new AuthClient({ baseURL: API_BASE });
+// Cliente por defecto para ms-auth
+export const defaultAuthClient = new AuthClient({ baseURL: import.meta.env.VITE_API_AUTH_URL });
 
-// fetch con auto-attach de Authorization y auto-refresh (usa el cliente por defecto)
+// fetch con auto-attach de Authorization y auto-refresh
 export function authFetch(input: string, init?: RequestInit): Promise<Response> {
   return defaultAuthClient.fetch(input, init);
 }
 
-// helpers opcionales por si te resultan cómodos en la UI
 export const login = (body: LoginRequest) => defaultAuthClient.login(body);
 export const logout = () => defaultAuthClient.logout();
 export const logoutAll = () => defaultAuthClient.logoutAll();

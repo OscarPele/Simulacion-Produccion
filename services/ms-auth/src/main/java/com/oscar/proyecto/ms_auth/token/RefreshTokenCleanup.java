@@ -19,10 +19,7 @@ public class RefreshTokenCleanup {
         this.repo = repo;
     }
 
-    /**
-     * Limpieza automática cada hora.
-     * CRON: s m h d m w  -> "0 0 * * * *"  = minuto 0 de cada hora
-     */
+    /** Limpieza automática cada hora. */
     @Transactional
     @Scheduled(cron = "0 0 * * * *")
     public void clean() {

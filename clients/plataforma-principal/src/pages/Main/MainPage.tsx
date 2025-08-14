@@ -44,6 +44,7 @@ export default function MainPage() {
             </p>
           </div>
         </div>
+
       </main>
     </div>
   );

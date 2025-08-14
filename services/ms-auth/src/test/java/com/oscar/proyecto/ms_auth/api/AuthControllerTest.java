@@ -7,7 +7,6 @@ import com.oscar.proyecto.ms_auth.api.dto.RefreshTokenRequest;
 import com.oscar.proyecto.ms_auth.exception.GlobalExceptionHandler;
 import com.oscar.proyecto.ms_auth.exception.InvalidCredentialsException;
 import com.oscar.proyecto.ms_auth.jwt.JwtService;
-import com.oscar.proyecto.ms_auth.token.RefreshToken;
 import com.oscar.proyecto.ms_auth.token.RefreshTokenService;
 import com.oscar.proyecto.ms_auth.user.User;
 import com.oscar.proyecto.ms_auth.user.UserService;
@@ -51,13 +50,12 @@ class AuthControllerTest {
         user.setUsername("alice");
         user.setEmail("alice@mail.com");
 
-        var rt = new RefreshToken();
-        rt.setToken("opaque-refresh");
+        var issued = new RefreshTokenService.IssuedRefresh("opaque-refresh", 604800L);
 
         Mockito.when(userService.authenticate("alice", "Secret123")).thenReturn(user);
         Mockito.when(jwtService.generate(eq("alice"), anyMap())).thenReturn("jwt.token.value");
         Mockito.when(jwtService.getExpirationSeconds()).thenReturn(900L);
-        Mockito.when(refreshTokenService.create(user)).thenReturn(rt);
+        Mockito.when(refreshTokenService.create(user)).thenReturn(issued);
         Mockito.when(refreshTokenService.getRefreshExpirationSeconds()).thenReturn(604800L);
 
         var req = new LoginRequest("alice", "Secret123");
@@ -138,9 +136,8 @@ class AuthControllerTest {
     @DisplayName("POST /auth/refresh → 200 con nuevo access y refresh rotado")
     void refresh_ok() throws Exception {
         var userRef = new RefreshTokenService.UserRef(1L, "alice");
-        var newRt = new RefreshToken();
-        newRt.setToken("new-opaque-refresh");
-        var rotation = new RefreshTokenService.RotationResult(userRef, newRt);
+        var newIssued = new RefreshTokenService.IssuedRefresh("new-opaque-refresh", 604800L);
+        var rotation = new RefreshTokenService.RotationResult(userRef, newIssued);
 
         Mockito.when(refreshTokenService.rotate("old-refresh")).thenReturn(rotation);
         Mockito.when(jwtService.generate("alice", Map.of("uid", 1L))).thenReturn("new.jwt.token");
