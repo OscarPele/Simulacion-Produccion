@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { FiUser, FiLock, FiEye, FiEyeOff } from 'react-icons/fi';
 import './LoginForm.scss';
 import { useNavigate } from 'react-router-dom';
-import { login, type TokenResponse } from '../../../../api/token/authClient'; // <- usa authClient
+import { login, type TokenResponse } from '../../../../api/token/authClient';
 
 type LoginRequest = { usernameOrEmail: string; password: string };
 

@@ -33,9 +33,6 @@ logging:
     org.springframework.security: ERROR
     org.hibernate.SQL: ERROR
 
-
-
-
 server:
   port: 8081
   address: 0.0.0.0
@@ -55,10 +52,18 @@ app:
     max-sessions-per-user: 5
 
 security:
-  permit-all: /auth/register,/auth/login,/auth/refresh,/auth/logout,/auth/logout-all,/actuator/health,/actuator/info
+  permit-all: /auth/register,/auth/login,/auth/refresh,/auth/logout,/auth/logout-all,/actuator/health,/actuator/info,/v3/api-docs/**,/swagger-ui.html,/swagger-ui/**
 
 
 cors:
   allowed-origins: ""
   allowed-methods: "GET,POST,PUT,DELETE,OPTIONS"
   allowed-headers: "*"
+
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    display-request-duration: true
+  api-docs:
+    path: /v3/api-docs

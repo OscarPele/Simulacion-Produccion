@@ -3,7 +3,7 @@ import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FiUser, FiMail, FiLock, FiEye, FiEyeOff } from 'react-icons/fi';
 import '../Login/LoginForm.scss';
-import { apiUrl } from '../../../../api/config'; // <- usa apiUrl
+import { apiUrl } from '../../../../api/config';
 
 type RegisterRequest = { username: string; email: string; password: string };
 
