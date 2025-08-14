@@ -5,6 +5,7 @@ import com.oscar.proyecto.ms_auth.jwt.JwtService;
 import com.oscar.proyecto.ms_auth.token.RefreshTokenService;
 import com.oscar.proyecto.ms_auth.user.User;
 import com.oscar.proyecto.ms_auth.user.UserService;
+import com.oscar.proyecto.ms_auth.password.PasswordResetService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -24,11 +25,16 @@ public class AuthController {
     private final UserService userService;
     private final JwtService jwtService;
     private final RefreshTokenService refreshTokenService;
+    private final PasswordResetService passwordResetService;
 
-    public AuthController(UserService userService, JwtService jwtService, RefreshTokenService refreshTokenService) {
+    public AuthController(UserService userService,
+                          JwtService jwtService,
+                          RefreshTokenService refreshTokenService,
+                          PasswordResetService passwordResetService) {
         this.userService = userService;
         this.jwtService = jwtService;
         this.refreshTokenService = refreshTokenService;
+        this.passwordResetService = passwordResetService;
     }
 
     @Operation(
@@ -226,4 +232,74 @@ public class AuthController {
         } catch (Exception ignored) { /* Idem: no filtramos info */ }
         return ResponseEntity.noContent().build();
     }
+
+
+
+    @Operation(
+            summary = "Solicitar restablecimiento de contraseña",
+            description = """
+                    Envía un email con un enlace para restablecer la contraseña si el correo existe.
+                    Por privacidad, este endpoint **siempre** responde 204.
+                    Campo:
+                    - **email**: formato válido.
+                    """,
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    required = true,
+                    content = @Content(
+                            schema = @Schema(implementation = ForgotPasswordRequest.class),
+                            examples = @ExampleObject(
+                                    value = """
+                                            { "email": "johndoe@example.com" }
+                                            """
+                            )
+                    )
+            ),
+            responses = {
+                    @ApiResponse(responseCode = "204", description = "Si existe, se envían instrucciones por email")
+            }
+    )
+    @PostMapping("/forgot-password")
+    public ResponseEntity<Void> forgotPassword(@Valid @RequestBody ForgotPasswordRequest request) {
+        // La implementación del servicio NO debe revelar si el email existe.
+        passwordResetService.requestReset(request.email());
+        return ResponseEntity.noContent().build();
+    }
+
+    @Operation(
+            summary = "Restablecer contraseña con token",
+            description = """
+                    Cambia la contraseña usando un token de un solo uso recibido por email.
+                    Campos:
+                    - **token**: token de restablecimiento.
+                    - **newPassword**: nueva contraseña (min 8).
+                    """,
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    required = true,
+                    content = @Content(
+                            schema = @Schema(implementation = ResetPasswordRequest.class),
+                            examples = @ExampleObject(
+                                    value = """
+                                            {
+                                              "token": "base64url-token-aqui",
+                                              "newPassword": "NewStrongPass456"
+                                            }
+                                            """
+                            )
+                    )
+            ),
+            responses = {
+                    @ApiResponse(responseCode = "204", description = "Contraseña restablecida y sesiones revocadas"),
+                    @ApiResponse(responseCode = "400", description = "Token inválido o expirado")
+            }
+    )
+    @PostMapping("/reset-password")
+    public ResponseEntity<Void> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
+        try {
+            passwordResetService.reset(request.token(), request.newPassword());
+            return ResponseEntity.noContent().build();
+        } catch (ResponseStatusException ex) {
+            return ResponseEntity.status(ex.getStatusCode()).build();
+        }
+    }
+
 }

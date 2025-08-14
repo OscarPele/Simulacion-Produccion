@@ -12,5 +12,15 @@
   "invalidCredentials": "Usuario/email o contraseña incorrectos",
   "usernameOrEmailRequired": "El nombre de usuario o el email es obligatorio",
   "serverError": "Error del servidor - inténtalo de nuevo más tarde",
-  "invalidForm": "Revisa los campos del formulario"
+  "invalidForm": "Revisa los campos del formulario",
+
+  "forgotPassword": "¿Olvidaste tu contraseña?",
+  "sendingReset": "Enviando…",
+  "emailRequiredForReset": "Introduce un correo válido para recuperar tu contraseña",
+  "resetEmailModal": {
+    "title": "Revisa tu correo",
+    "body": "Si {{email}} existe, te hemos enviado instrucciones para restablecer tu contraseña. El enlace caduca en 15 minutos."
+  },
+  "ok": "Entendido"
+
 }
