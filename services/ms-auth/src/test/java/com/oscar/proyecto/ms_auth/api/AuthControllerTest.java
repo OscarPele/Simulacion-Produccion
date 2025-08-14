@@ -10,6 +10,7 @@ import com.oscar.proyecto.ms_auth.jwt.JwtService;
 import com.oscar.proyecto.ms_auth.token.RefreshTokenService;
 import com.oscar.proyecto.ms_auth.user.User;
 import com.oscar.proyecto.ms_auth.user.UserService;
+import com.oscar.proyecto.ms_auth.password.PasswordResetService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -41,6 +42,7 @@ class AuthControllerTest {
     @MockitoBean UserService userService;
     @MockitoBean JwtService jwtService;
     @MockitoBean RefreshTokenService refreshTokenService;
+    @MockitoBean PasswordResetService passwordResetService;
 
     @Test
     @DisplayName("POST /auth/login → 200 con token")

@@ -9,6 +9,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Service
 public class UserService {
     private final UserRepository userRepo;
@@ -22,6 +24,7 @@ public class UserService {
     @Transactional
     public User register(String username, String email, String rawPassword) {
         if (userRepo.existsByUsername(username)) throw new UsernameAlreadyExistsException();
+        // Si tienes existsByEmailIgnoreCase, úsalo; si no, el de siempre:
         if (userRepo.existsByEmail(email)) throw new EmailAlreadyExistsException();
 
         User u = new User();
@@ -55,6 +58,20 @@ public class UserService {
             throw new CurrentPasswordIncorrectException();
         }
         user.setPasswordHash(encoder.encode(newPassword));
+        userRepo.save(user);
+    }
+
+
+    @Transactional(readOnly = true)
+    public Optional<User> findByEmailIgnoreCase(String email) {
+        return userRepo.findByEmailIgnoreCase(email);
+    }
+
+    /** Cambia la contraseña SIN requerir la actual (para reset password). */
+    @Transactional
+    public void forceChangePassword(Long userId, String rawPassword) {
+        var user = requireById(userId);
+        user.setPasswordHash(encoder.encode(rawPassword));
         userRepo.save(user);
     }
 }
