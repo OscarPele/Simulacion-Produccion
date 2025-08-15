@@ -12,14 +12,13 @@ services:
       timeout: 3s
       retries: 20
     volumes:
-      - pgdata:/var/lib/postgresql/
-    ports:
-      - "5433:5432"
-
+      - pgdata:/var/lib/postgresql/data
+    ports: ["5433:5432"]
 
   ms-auth:
+    profiles: ["auth"]
     build:
-      context: ../..
+      context: .                       # raíz del repo
       dockerfile: services/ms-auth/Dockerfile
     image: ms-auth:dev
     depends_on:
@@ -27,29 +26,26 @@ services:
         condition: service_healthy
     restart: unless-stopped
     read_only: true
-    tmpfs:
-      - /tmp
+    tmpfs: [/tmp]
     volumes:
-      - ./secrets/private.pem:/run/secrets/jwt_private.pem:ro
-      - ./secrets/public.pem:/run/secrets/jwt_public.pem:ro
+      - ./services/ms-auth/secrets/private.pem:/run/secrets/jwt_private.pem:ro
+      - ./services/ms-auth/secrets/public.pem:/run/secrets/jwt_public.pem:ro
     environment:
       TZ: ${TZ}
       SPRING_PROFILES_ACTIVE: prod
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/${POSTGRES_DB}
       SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
       SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
-      MANAGEMENT_ENDPOINT_HEALTH_SHOW-DETAILS: when_authorized
+      MANAGEMENT_ENDPOINT_HEALTH_SHOW-DETAILS: always
       JAVA_TOOL_OPTIONS: "-XX:MaxRAMPercentage=75"
       APP_JWT_PRIVATE_KEY_LOCATION: file:/run/secrets/jwt_private.pem
-      APP_JWT_PUBLIC_KEY_LOCATION: file:/run/secrets/jwt_public.pem
+      APP_JWT_PUBLIC_KEY_LOCATION:  file:/run/secrets/jwt_public.pem
       MAIL_HOST: ${MAIL_HOST}
       MAIL_PORT: ${MAIL_PORT}
       MAIL_USERNAME: ${MAIL_USERNAME}
       MAIL_PASSWORD: ${MAIL_PASSWORD}
       MAIL_FROM: ${MAIL_FROM}
-    ports: [ "8081:8081" ]
-
-
+    ports: ["8081:8081"]
 
 volumes:
   pgdata:
