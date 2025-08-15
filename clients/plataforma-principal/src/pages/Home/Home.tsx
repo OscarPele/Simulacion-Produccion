@@ -13,7 +13,7 @@ type Anim = 'idle' | 'expanding' | 'closing';
 type CSSVars = React.CSSProperties & { [key: `--${string}`]: string };
 
 export default function Home() {
-  const { t, i18n } = useTranslation('app');
+  const { t } = useTranslation('app');
 
   const [mode, setMode] = useState<Mode>('login');
   const [anim, setAnim] = useState<Anim>('idle');

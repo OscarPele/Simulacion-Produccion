@@ -199,7 +199,7 @@ export default function LoginForm({ onSuccess, onGoRegister }: Props) {
         </fieldset>
       </form>
 
-      {/* Modal de confirmación (reutiliza tus clases de UserMenu) */}
+      {/* Modal de confirmación (reutiliza clases de UserMenu) */}
       {forgotOpen && (
         <div className="modal-backdrop" onClick={() => setForgotOpen(false)}>
           <div

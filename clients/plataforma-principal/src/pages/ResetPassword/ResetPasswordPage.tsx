@@ -16,7 +16,7 @@ export default function ResetPasswordPage() {
   const [errorMsg, setError] = useState<string | null>(null);
   const [done, setDone] = useState(false);
 
-  // NUEVO: control de interacción del usuario
+  // control de interacción del usuario
   const [touched, setTouched] = useState({ pwd: false, pwd2: false });
   const [submitted, setSubmitted] = useState(false);
 
@@ -24,18 +24,17 @@ export default function ResetPasswordPage() {
   const pwdError  = pwd.length < 8 ? t('errors.shortPassword') : null;
   const pwd2Error = pwd2 && pwd !== pwd2 ? t('errors.passwordsDontMatch') : null;
 
-  // Error “global” de cliente (el que ya usabas para canSubmit)
+  // Error “global” de cliente
   const clientError = useMemo(() => {
     if (!token) return t('errors.missingToken');
     return pwdError ?? pwd2Error ?? null;
   }, [token, pwdError, pwd2Error, t]);
 
-  // Mantiene tu lógica de habilitar/deshabilitar submit
   const canSubmit = !!token && !loading && !clientError;
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitted(true);                 // NUEVO: marca intento de envío
+    setSubmitted(true);                
     if (!canSubmit) return;
 
     setLoading(true);
@@ -82,8 +81,7 @@ export default function ResetPasswordPage() {
       </div>
     );
   }
-
-  // Mostrar mensajes solo si el usuario interactuó o intentó enviar
+  
   const showErrors = submitted || touched.pwd || touched.pwd2;
 
   return (
@@ -102,9 +100,9 @@ export default function ResetPasswordPage() {
             minLength={8}
             value={pwd}
             onChange={(e) => setPwd(e.target.value)}
-            onBlur={() => setTouched(v => ({ ...v, pwd: true }))}    // NUEVO
+            onBlur={() => setTouched(v => ({ ...v, pwd: true }))}
             required
-            aria-invalid={(submitted || touched.pwd) ? pwd.length < 8 : false}  // NUEVO
+            aria-invalid={(submitted || touched.pwd) ? pwd.length < 8 : false}
           />
         </div>
 
@@ -118,9 +116,9 @@ export default function ResetPasswordPage() {
             minLength={8}
             value={pwd2}
             onChange={(e) => setPwd2(e.target.value)}
-            onBlur={() => setTouched(v => ({ ...v, pwd2: true }))}   // NUEVO
+            onBlur={() => setTouched(v => ({ ...v, pwd2: true }))}
             required
-            aria-invalid={(submitted || touched.pwd2) ? (pwd2.length > 0 && pwd !== pwd2) : false} // NUEVO
+            aria-invalid={(submitted || touched.pwd2) ? (pwd2.length > 0 && pwd !== pwd2) : false}
           />
         </div>
 

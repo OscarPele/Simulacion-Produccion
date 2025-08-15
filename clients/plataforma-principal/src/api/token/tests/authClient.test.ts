@@ -1,4 +1,3 @@
-// src/api/token/tests/authClient.test.ts
 import { http, HttpResponse } from 'msw';
 import { server, sleep } from '../../../test/setupTests';
 import { AuthClient } from '../authClient';
@@ -10,7 +9,7 @@ const baseURL = 'http://api.local';
 const tokens1 = {
   tokenType: 'Bearer' as const,
   accessToken: 'access-1',
-  expiresIn: 1, // 1s → para otros tests, en "adjunta Authorization" lo sobrescribimos
+  expiresIn: 1,
   refreshToken: 'refresh-1',
   refreshExpiresIn: 3600,
 };
@@ -43,7 +42,6 @@ describe('authClient', () => {
   });
 
   test('adjunta Authorization en peticiones', async () => {
-    // ⬇️ Usamos un expiresIn alto para que NO intente /auth/refresh y evitemos el warning de MSW
     server.use(
       http.post(`${baseURL}/auth/login`, async () =>
         HttpResponse.json({ ...tokens1, expiresIn: 300 }),
@@ -65,7 +63,6 @@ describe('authClient', () => {
   test('401 → refresh → reintento OK', async () => {
     server.use(
       http.post(`${baseURL}/auth/login`, async () => HttpResponse.json(tokens1)),
-      // Primer intento: 401, pero si ya hay access-2 (tras refresh) devolvemos 200
       http.get(`${baseURL}/protected`, async ({ request }) => {
         const auth = request.headers.get('authorization');
         if (auth === 'Bearer access-2') return HttpResponse.json({ ok: true });
@@ -81,7 +78,7 @@ describe('authClient', () => {
     const c = new AuthClient({ baseURL });
     await c.login({ usernameOrEmail: 'alice', password: 'x' });
 
-    await sleep(1100); // expira access-1
+    await sleep(1100);
 
     const r = await c.fetch('/protected');
     expect(r.status).toBe(200);
@@ -110,7 +107,6 @@ describe('authClient', () => {
 
     server.use(
       http.post(`${baseURL}/auth/login`, async () => HttpResponse.json(tokens1)),
-      // ⬇️ Igual que en el test de reintento OK: 200 tras tener access-2
       http.get(`${baseURL}/protected`, async ({ request }) => {
         const auth = request.headers.get('authorization');
         if (auth === 'Bearer access-2') return HttpResponse.json({ ok: true });
