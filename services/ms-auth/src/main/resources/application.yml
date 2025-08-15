@@ -58,8 +58,8 @@ app:
   jwt:
     issuer: ms-auth
     audience: api
-    private-key-location: classpath:jwt/private.pem
-    public-key-location: classpath:jwt/public.pem
+    private-key-location: ${APP_JWT_PRIVATE_KEY_LOCATION:classpath:jwt/private.pem}
+    public-key-location: ${APP_JWT_PUBLIC_KEY_LOCATION:classpath:jwt/public.pem}
     expiration-minutes: 60
     refresh-expiration-days: ${APP_JWT_REFRESH_EXPIRATION_DAYS:7}
     max-sessions-per-user: 5

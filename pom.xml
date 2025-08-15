@@ -1,3 +1,4 @@
+
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
@@ -19,14 +20,14 @@
   </properties>
 
   <!-- Lista de módulos hijos en el proyecto -->
-  <modules>
+    <modules>
+        <module>services/shared.security</module>
+        <module>services/ms-auth</module>
+        <module>services/ms-hr</module>
+    </modules>
 
-    <module>ms-auth</module>
-    <module>ms-hr</module>
-    <!-- Ir agregando aquí más servicios -->
-  </modules>
 
-  <!-- Gestión de versiones de dependencias: importamos el BOM de Spring Boot -->
+    <!-- Gestión de versiones de dependencias: importamos el BOM de Spring Boot -->
   <dependencyManagement>
     <dependencies>
       <dependency>

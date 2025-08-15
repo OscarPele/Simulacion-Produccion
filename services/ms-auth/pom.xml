@@ -8,7 +8,7 @@
         <groupId>com.oscar.proyecto</groupId>
         <artifactId>simulacion-produccion-parent</artifactId>
         <version>1.0.0-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
+        <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <artifactId>ms-auth</artifactId>
@@ -100,8 +100,7 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- OpenAPI/Swagger: UI para documentación y pruebas manuales.
-             Se fija versión de swagger-ui para evitar vulnerabilidades transitivas. -->
+        <!-- OpenAPI/Swagger (versiones fijadas) -->
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
@@ -113,27 +112,38 @@
             <version>5.27.1</version>
         </dependency>
 
-
+        <!-- Mail -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-mail</artifactId>
         </dependency>
 
+        <!-- Dotenv -->
         <dependency>
             <groupId>me.paulschwarz</groupId>
             <artifactId>spring-dotenv</artifactId>
             <version>4.0.0</version>
         </dependency>
-
-
     </dependencies>
 
     <build>
         <plugins>
+            <!-- Repackage para generar fat-jar ejecutable con Main-Class -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <mainClass>com.oscar.proyecto.ms_auth.MsAuthApplication</mainClass>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
