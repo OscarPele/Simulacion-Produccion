@@ -1,6 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-// helper para importar siempre el módulo fresco tras cambiar env
 const importConfig = async () => await import('../../config');
 
 describe('config.ts', () => {
@@ -8,29 +7,29 @@ describe('config.ts', () => {
     vi.resetModules(); // obliga a reevaluar el módulo y recalcular API_BASE
   });
 
-  it('API_BASE normaliza espacios y quita la barra final', async () => {
-    vi.stubEnv('VITE_API_BASE_URL', ' https://api.example.com/ ');
-    const { API_BASE } = await importConfig();
-    expect(API_BASE).toBe('https://api.example.com');
+  it('API_AUTH_BASE normaliza espacios y quita la barra final', async () => {
+    vi.stubEnv('API_AUTH_BASE', ' https://api.example.com/ ');
+    const { API_AUTH_BASE } = await importConfig();
+    expect(API_AUTH_BASE).toBe('https://api.example.com');
   });
 
   it('API_BASE es "" cuando no hay env', async () => {
     vi.stubEnv('VITE_API_BASE_URL', '');
-    const { API_BASE } = await importConfig();
-    expect(API_BASE).toBe('');
+    const { API_AUTH_BASE } = await importConfig();
+    expect(API_AUTH_BASE).toBe('');
   });
 
   it('apiUrl no altera URLs absolutas', async () => {
     vi.stubEnv('VITE_API_BASE_URL', 'https://api.example.com/');
-    const { apiUrl } = await importConfig();
-    expect(apiUrl('http://other/ok')).toBe('http://other/ok');
-    expect(apiUrl('https://other/ok')).toBe('https://other/ok');
+    const { authApiUrl } = await importConfig();
+    expect(authApiUrl('http://other/ok')).toBe('http://other/ok');
+    expect(authApiUrl('https://other/ok')).toBe('https://other/ok');
   });
 
   it('apiUrl compone con base y maneja slash inicial', async () => {
     vi.stubEnv('VITE_API_BASE_URL', 'https://api.example.com/');
-    const { apiUrl } = await importConfig();
-    expect(apiUrl('/users')).toBe('https://api.example.com/users');
-    expect(apiUrl('users')).toBe('https://api.example.com/users');
+    const { authApiUrl } = await importConfig();
+    expect(authApiUrl('/users')).toBe('https://api.example.com/users');
+    expect(authApiUrl('users')).toBe('https://api.example.com/users');
   });
 });

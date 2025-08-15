@@ -1,6 +1,5 @@
-// src/api/token/authClient.ts
 import { tokenStore } from './tokenStore';
-import { authApiUrl } from '../config'; // <-- cambiado: helper que construye URLs del ms-auth
+import { authApiUrl } from '../config';
 
 export type LoginRequest = { usernameOrEmail: string; password: string };
 export type TokenResponse = {

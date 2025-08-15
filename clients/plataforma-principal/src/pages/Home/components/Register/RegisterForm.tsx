@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FiUser, FiMail, FiLock, FiEye, FiEyeOff } from 'react-icons/fi';
 import '../Login/LoginForm.scss';
-import { authApiUrl } from '../../../../api/config'; // ✅ cambiado: helper de URL
+import { authApiUrl } from '../../../../api/config'; 
 
 type RegisterRequest = { username: string; email: string; password: string };
 
@@ -12,7 +12,7 @@ type Props = {
 
 export default function RegisterForm({ onGoLogin }: Props) {
   const { t } = useTranslation('RegisterForm');
-  const endpoint = authApiUrl('/auth/register'); // ✅ ahora construye la URL desde config
+  const endpoint = authApiUrl('/auth/register'); 
 
   const [form, setForm] = useState<RegisterRequest>({ username: '', email: '', password: '' });
   const [showPwd, setShowPwd] = useState(false);

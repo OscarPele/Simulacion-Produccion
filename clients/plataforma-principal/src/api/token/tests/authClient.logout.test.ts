@@ -1,4 +1,3 @@
-// src/api/token/tests/authClient.logout.test.ts
 import { beforeEach, describe, expect, test } from 'vitest';
 import { http, HttpResponse } from 'msw';
 import { server } from '../../../test/setupTests';
@@ -50,7 +49,7 @@ describe('logout & logoutAll (AuthClient methods)', () => {
       http.post(`${baseURL}/auth/logout-all`, async ({ request }) => {
         called = true;
         body = await request.json();
-        return new HttpResponse(null, { status: 500 }); // falla pero cliente limpia igual
+        return new HttpResponse(null, { status: 500 });
       }),
     );
 
