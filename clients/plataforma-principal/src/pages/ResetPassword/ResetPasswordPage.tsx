@@ -16,17 +16,26 @@ export default function ResetPasswordPage() {
   const [errorMsg, setError] = useState<string | null>(null);
   const [done, setDone] = useState(false);
 
+  // NUEVO: control de interacción del usuario
+  const [touched, setTouched] = useState({ pwd: false, pwd2: false });
+  const [submitted, setSubmitted] = useState(false);
+
+  // Errores por campo (lógica igual, pero separada)
+  const pwdError  = pwd.length < 8 ? t('errors.shortPassword') : null;
+  const pwd2Error = pwd2 && pwd !== pwd2 ? t('errors.passwordsDontMatch') : null;
+
+  // Error “global” de cliente (el que ya usabas para canSubmit)
   const clientError = useMemo(() => {
     if (!token) return t('errors.missingToken');
-    if (pwd.length < 8) return t('errors.shortPassword');
-    if (pwd !== pwd2) return t('errors.passwordsDontMatch');
-    return null;
-  }, [token, pwd, pwd2, t]);
+    return pwdError ?? pwd2Error ?? null;
+  }, [token, pwdError, pwd2Error, t]);
 
+  // Mantiene tu lógica de habilitar/deshabilitar submit
   const canSubmit = !!token && !loading && !clientError;
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setSubmitted(true);                 // NUEVO: marca intento de envío
     if (!canSubmit) return;
 
     setLoading(true);
@@ -63,7 +72,7 @@ export default function ResetPasswordPage() {
       <div className="reset-wrapper">
         <div className="reset-card card">
           <h2 className="reset-title">{t('success.title')}</h2>
-          <p className="reset-desc">{t('success.body')}</p>
+        <p className="reset-desc">{t('success.body')}</p>
           <div className="actions">
             <button onClick={() => navigate('/')} className="primary-button">
               {t('success.goLogin')}
@@ -73,6 +82,9 @@ export default function ResetPasswordPage() {
       </div>
     );
   }
+
+  // Mostrar mensajes solo si el usuario interactuó o intentó enviar
+  const showErrors = submitted || touched.pwd || touched.pwd2;
 
   return (
     <div className="reset-wrapper">
@@ -90,8 +102,9 @@ export default function ResetPasswordPage() {
             minLength={8}
             value={pwd}
             onChange={(e) => setPwd(e.target.value)}
+            onBlur={() => setTouched(v => ({ ...v, pwd: true }))}    // NUEVO
             required
-            aria-invalid={!!(clientError && pwd.length < 8)}
+            aria-invalid={(submitted || touched.pwd) ? pwd.length < 8 : false}  // NUEVO
           />
         </div>
 
@@ -105,12 +118,13 @@ export default function ResetPasswordPage() {
             minLength={8}
             value={pwd2}
             onChange={(e) => setPwd2(e.target.value)}
+            onBlur={() => setTouched(v => ({ ...v, pwd2: true }))}   // NUEVO
             required
-            aria-invalid={!!(clientError && pwd !== pwd2)}
+            aria-invalid={(submitted || touched.pwd2) ? (pwd2.length > 0 && pwd !== pwd2) : false} // NUEVO
           />
         </div>
 
-        {errorMsg || clientError ? (
+        {showErrors && (errorMsg || clientError) ? (
           <p role="alert" aria-live="polite" className="error">{errorMsg ?? clientError}</p>
         ) : null}
 

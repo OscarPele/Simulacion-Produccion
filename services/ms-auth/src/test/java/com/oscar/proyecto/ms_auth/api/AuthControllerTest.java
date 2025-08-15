@@ -2,15 +2,15 @@ package com.oscar.proyecto.ms_auth.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.oscar.proyecto.ms_auth.api.dto.LoginRequest;
-import com.oscar.proyecto.ms_auth.api.dto.RegisterRequest;
 import com.oscar.proyecto.ms_auth.api.dto.RefreshTokenRequest;
+import com.oscar.proyecto.ms_auth.api.dto.RegisterRequest;
 import com.oscar.proyecto.ms_auth.exception.GlobalExceptionHandler;
 import com.oscar.proyecto.ms_auth.exception.InvalidCredentialsException;
 import com.oscar.proyecto.ms_auth.jwt.JwtService;
+import com.oscar.proyecto.ms_auth.password.PasswordResetService;   // <-- NUEVO
 import com.oscar.proyecto.ms_auth.token.RefreshTokenService;
 import com.oscar.proyecto.ms_auth.user.User;
 import com.oscar.proyecto.ms_auth.user.UserService;
-import com.oscar.proyecto.ms_auth.password.PasswordResetService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -18,9 +18,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.http.MediaType;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean; // se mantiene
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -39,10 +39,11 @@ class AuthControllerTest {
     @Autowired MockMvc mvc;
     @Autowired ObjectMapper om;
 
+    // === Mocks ===
     @MockitoBean UserService userService;
     @MockitoBean JwtService jwtService;
     @MockitoBean RefreshTokenService refreshTokenService;
-    @MockitoBean PasswordResetService passwordResetService;
+    @MockitoBean PasswordResetService passwordResetService; // <-- NUEVO mock requerido por el constructor
 
     @Test
     @DisplayName("POST /auth/login → 200 con token")

@@ -71,7 +71,7 @@ export default function LoginForm({ onSuccess, onGoRegister }: Props) {
       // Llamada al backend; siempre mostrará el mismo resultado (204) aunque el email no exista
       await forgotPassword(email);
     } catch {
-      // Por privacidad y DX, mostramos el mismo modal aunque falle: el backend tampoco debe revelar nada.
+      // Por privacidad y DX, mostramos el mismo modal aunque falle
     } finally {
       setMaskedEmail(maskEmail(email));
       setForgotOpen(true);
@@ -165,21 +165,23 @@ export default function LoginForm({ onSuccess, onGoRegister }: Props) {
           </div>
 
           {/* Enlace "¿Olvidaste la contraseña?" con validación + modal */}
-          <p className="forgot-text">
-            <a
-              href="#forgot"
-              className="forgot-link"
-              onClick={handleForgot}
-              aria-disabled={loading || forgotLoading}
-            >
-              {forgotLoading ? t('sendingReset') : t('forgotPassword')}
-            </a>
-          </p>
+          <div className='forgot-container'>
+            <p className="forgot-text">
+              <a
+                href="#forgot"
+                className="forgot-link"
+                onClick={handleForgot}
+                aria-disabled={loading || forgotLoading}
+              >
+                {forgotLoading ? t('sendingReset') : t('forgotPassword')}
+              </a>
+            </p>
 
-          {errorMsg && (
-            <p role="alert" aria-live="polite" className="error">{errorMsg}</p>
-          )}
-
+            {errorMsg && (
+              <p role="alert" aria-live="polite" className="error">{errorMsg}</p>
+            )}
+          </div>
+          
           <button type="submit" className="primary-button" disabled={!canSubmit}>
             {loading ? t('loggingIn') : t('login')}
           </button>
