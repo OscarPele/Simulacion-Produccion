@@ -9,4 +9,3 @@ application-*.yml
 k8s/*.yaml
 .env
 application-prod.yml
-k8s/
