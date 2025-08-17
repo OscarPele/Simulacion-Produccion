@@ -32,7 +32,7 @@ jobs:
           mkdir -p services/ms-auth/src/main/resources/jwt
           cp "$SRC/secrets/jwt/public.pem"  services/ms-auth/src/main/resources/jwt/public.pem
           cp "$SRC/secrets/jwt/private.pem" services/ms-auth/src/main/resources/jwt/private.pem
-      
+
       - name: Build & restart (docker compose)
         run: |
           docker compose build
