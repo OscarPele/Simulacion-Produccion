@@ -1,0 +1,27 @@
+{
+  "usernameOrEmailPlaceholder": "Username or email address",
+  "passwordPlaceholder": "Password",
+  "showPassword": "Show password",
+  "hidePassword": "Hide password",
+  "errorConnecting": "Could not connect to the server",
+  "login": "Login",
+  "loggingIn": "Logging in…",
+  "dontHaveAccount": "Don’t you have an account?",
+  "signUp": "Sign up",
+  "errorWithCode": "Error {{code}}",
+  "invalidCredentials": "Invalid username/email or password",
+  "usernameOrEmailRequired": "Username or email is required",
+  "serverError": "Server error - please try again later",
+  "invalidForm": "Please review the form fields",
+
+  
+  "forgotPassword": "Forgot your password?",
+  "sendingReset": "Sending…",
+  "emailRequiredForReset": "Please enter a valid email to recover your password",
+  "resetEmailModal": {
+    "title": "Check your email",
+    "body": "If {{email}} exists, we have sent you instructions to reset your password. The link will expire in 15 minutes."
+  },
+  "ok": "OK"
+
+}

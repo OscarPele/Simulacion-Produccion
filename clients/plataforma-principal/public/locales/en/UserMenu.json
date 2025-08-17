@@ -1,0 +1,33 @@
+{
+  "labels": {
+    "user": "User"
+  },
+  "aria": {
+    "openMenu": "Open menu for {{username}}"
+  },
+  "actions": {
+    "changePassword": "Change password",
+    "logout": "Log out",
+    "cancel": "Cancel",
+    "save": "Save"
+  },
+  "titles": {
+    "changePassword": "Change password"
+  },
+  "fields": {
+    "currentPassword": "Current password",
+    "newPassword": "New password",
+    "repeatNewPassword": "Repeat new password"
+  },
+  "states": {
+    "saving": "Saving…"
+  },
+  "errors": {
+    "currentPasswordIncorrect": "Current password is incorrect",
+    "invalidData": "Invalid data",
+    "sessionExpired": "Session expired",
+    "userNotFound": "User not found",
+    "genericWithCode": "Error {{code}}",
+    "network": "Could not connect. Please try again."
+  }
+}
