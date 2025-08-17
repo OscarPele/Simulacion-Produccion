@@ -83,7 +83,8 @@ public class MSSecurityConfig {
             cfg.setAllowedOriginPatterns(List.of(
                     "http://localhost:*",
                     "http://127.0.0.1:*",
-                    "http://192.168.*.*:*"
+                    "http://192.168.*.*:*",
+                    "https://plataforma-principal.vercel.app"
             ));
         }
 

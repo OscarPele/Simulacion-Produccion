@@ -1,0 +1,46 @@
+.main-nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #eee;
+  background: #fff;
+}
+
+.nav-left,
+.nav-right {
+  display: flex;
+  align-items: center;
+}
+
+.main-nav .company-logo {
+  padding: 0;
+  gap: 0.5rem;
+}
+
+
+
+.main-content { padding: 1.25rem; }
+
+.auth-flag {
+  display: flex;
+  align-items: flex-start;
+  gap: .75rem;
+  padding: .9rem 1rem;
+  border-radius: 12px;
+  border: 1px solid #e7e7e7;
+  background: #fff;
+  max-width: 800px;
+}
+
+.auth-flag.success { border-color: #c6f6d5; background: #f0fff4; }
+.auth-flag.warning { border-color: #fed7d7; background: #fff5f5; }
+
+.auth-flag__icon { font-size: 1.5rem; line-height: 1; }
+.auth-flag__body h2 { margin: 0 0 .25rem 0; font-size: 1.05rem; }
+.auth-flag__body p { margin: 0; color: #444; }
+

@@ -1,0 +1,23 @@
+name: Local CI/CD
+
+on:
+  push:
+    branches: [ main ]
+
+concurrency:
+  group: local-deploy
+  cancel-in-progress: false
+
+jobs:
+  build-and-restart:
+    runs-on: [self-hosted, macOS, ARM64]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build & restart (docker compose)
+        run: |
+          docker compose build
+          docker compose up -d
+
+      - name: Status
+        run: docker compose ps
