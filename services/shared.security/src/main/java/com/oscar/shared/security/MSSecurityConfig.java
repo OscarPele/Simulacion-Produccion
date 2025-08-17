@@ -84,8 +84,8 @@ public class MSSecurityConfig {
                     "http://localhost:*",
                     "http://127.0.0.1:*",
                     "http://192.168.*.*:*",
-                    "https://plataforma-principal.vercel.app",
-                    "https://plataforma-principal-git-main-oscars-projects-067aa3b6.vercel.app"
+                    "https://opsimulator.com",
+                    "https://www.opsimulator.com"
             ));
         }
 
