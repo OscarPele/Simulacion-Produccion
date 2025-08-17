@@ -21,12 +21,18 @@ jobs:
         run: |
           cp "/Users/oscarpelegrina/Desktop/Simulacion-Produccion/.env" .env
 
-      - name: Seed JWT keys into classpath
+      - name: Seed secrets (.env + JWT)
         run: |
-          mkdir -p services/ms-auth/src/main/resources/jwt
-          cp "$HOME/Simulacion-Produccion/services/ms-auth/secrets/public.pem"  services/ms-auth/src/main/resources/jwt/public.pem
-          cp "$HOME/Simulacion-Produccion/services/ms-auth/secrets/private.pem" services/ms-auth/src/main/resources/jwt/private.pem
+          SRC="$HOME/Desktop/Simulacion-Produccion/.local"
+          test -f "$SRC/.env" || { echo "::error::Missing $SRC/.env"; exit 1; }
+          test -f "$SRC/secrets/jwt/public.pem" || { echo "::error::Missing $SRC/secrets/jwt/public.pem"; exit 1; }
+          test -f "$SRC/secrets/jwt/private.pem" || { echo "::error::Missing $SRC/secrets/jwt/private.pem"; exit 1; }
 
+          cp "$SRC/.env" .env
+          mkdir -p services/ms-auth/src/main/resources/jwt
+          cp "$SRC/secrets/jwt/public.pem"  services/ms-auth/src/main/resources/jwt/public.pem
+          cp "$SRC/secrets/jwt/private.pem" services/ms-auth/src/main/resources/jwt/private.pem
+      
       - name: Build & restart (docker compose)
         run: |
           docker compose build
