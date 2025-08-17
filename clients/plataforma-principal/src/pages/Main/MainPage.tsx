@@ -4,6 +4,7 @@ import Logo from '../../components/common/Logo/Logo';
 import UserMenu from './components/Nav/UserMenu/UserMenu';
 import { jwtDecode } from 'jwt-decode';
 import { FiCheckCircle, FiAlertTriangle } from 'react-icons/fi';
+import ComponenteDePrueba from './ComponenteDePrueba';
 
 type JwtPayload = { sub?: string; email?: string; uid?: number; exp?: number };
 
@@ -30,7 +31,6 @@ export default function MainPage() {
       </nav>
 
       <main className="main-content">
-
         <div className={`auth-flag ${isValid ? 'success' : 'warning'}`}>
           <div className="auth-flag__icon">
             {isValid ? <FiCheckCircle /> : <FiAlertTriangle />}
@@ -45,6 +45,8 @@ export default function MainPage() {
           </div>
         </div>
 
+        {/* Bloque de prueba que llama al endpoint protegido */}
+        <ComponenteDePrueba />
       </main>
     </div>
   );
