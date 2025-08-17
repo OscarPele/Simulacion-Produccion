@@ -20,7 +20,13 @@ jobs:
       - name: Seed .env for compose
         run: |
           cp "/Users/oscarpelegrina/Desktop/Simulacion-Produccion/.env" .env
-      
+
+      - name: Seed JWT keys into classpath
+        run: |
+          mkdir -p services/ms-auth/src/main/resources/jwt
+          cp "$HOME/Simulacion-Produccion/services/ms-auth/secrets/public.pem"  services/ms-auth/src/main/resources/jwt/public.pem
+          cp "$HOME/Simulacion-Produccion/services/ms-auth/secrets/private.pem" services/ms-auth/src/main/resources/jwt/private.pem
+
       - name: Build & restart (docker compose)
         run: |
           docker compose build
