@@ -26,7 +26,7 @@ public class MsAuthApplication {
                     "ok", true,
                     "user", principal != null ? principal.getName() : null,
                     "ts", Instant.now().toString(),
-                    "message", "ms-auth protected OK"
+                    "message", "ms-auth protected OK. PING DE CAMBIO, COMMIT Y MERGE"
             );
         }
     }
