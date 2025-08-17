@@ -6,3 +6,4 @@ application-prod.yml
 .env
 services/ms-auth/.env
 services/ms-auth/src/main/resources/jwt/private.pem
+/actions-runner

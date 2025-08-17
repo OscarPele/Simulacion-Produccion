@@ -1,48 +1,23 @@
-name: ms-auth ➜ Build & Push to ECR
+name: Local CI/CD
 
 on:
   push:
     branches: [ main ]
-    paths:
-      - "services/ms-auth/**"
-      - ".github/workflows/ms-auth-ecr.yml"
+
+concurrency:
+  group: local-deploy
+  cancel-in-progress: false
 
 jobs:
-  build-and-push:
-    runs-on: ubuntu-latest
-    permissions:
-      id-token: write
-      contents: read
-
-    env:
-      AWS_REGION: ${{ secrets.AWS_REGION }}
-      ECR_REGISTRY: ${{ secrets.ECR_REGISTRY }}
-      ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
-      IMAGE_TAG: ${{ github.sha }}
-
+  build-and-restart:
+    runs-on: [self-hosted, macOS, ARM64]
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Configure AWS credentials (OIDC)
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
-
-      - name: Login to Amazon ECR
-        uses: aws-actions/amazon-ecr-login@v2
-
-      - name: Build & push image
+      - name: Build & restart (docker compose)
         run: |
-          docker build \
-            -t $ECR_REGISTRY/$ECR_REPOSITORY:latest \
-            -t $ECR_REGISTRY/$ECR_REPOSITORY:${IMAGE_TAG::12} \
-            -f services/ms-auth/Dockerfile \
-            .
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:${IMAGE_TAG::12}
+          docker compose build
+          docker compose up -d
 
-      - name: Image URI (output)
-        run: echo "IMAGE=$ECR_REGISTRY/$ECR_REPOSITORY:${IMAGE_TAG::12}" >> $GITHUB_OUTPUT
+      - name: Status
+        run: docker compose ps
