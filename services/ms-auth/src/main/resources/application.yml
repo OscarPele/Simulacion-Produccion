@@ -18,6 +18,10 @@ spring:
       ddl-auto: update
     open-in-view: false
     show-sql: false
+    properties:
+      hibernate:
+        default_schema: public
+        ddl-auto: none
   mail:
     host: ${MAIL_HOST:smtp.gmail.com}
     port: ${MAIL_PORT:587}

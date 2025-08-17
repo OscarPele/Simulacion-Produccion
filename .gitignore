@@ -1,12 +1,8 @@
-services/ms-auth/.env # por si acaso
-services/ms-auth/src/main/resources/jwt/private.pem
 *.pem
-
-
 *.env
-*/secrets.yaml
-application-*.yml
-k8s/*.yaml
-.env
 application-prod.yml
-k8s/
+*/secrets.yaml
+
+.env
+services/ms-auth/.env
+services/ms-auth/src/main/resources/jwt/private.pem
