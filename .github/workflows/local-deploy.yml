@@ -14,12 +14,18 @@ concurrency:
 jobs:
   build-and-restart:
     runs-on: [self-hosted, macOS, ARM64]
+    env:
+      DOCKER_CONFIG: ${{ runner.temp }}/.docker-ci
     steps:
       - uses: actions/checkout@v4
 
-      - name: Seed .env for compose
+      - name: Prepare Docker config (no macOS Keychain)
         run: |
-          cp "/Users/oscarpelegrina/Desktop/Simulacion-Produccion/.env" .env
+          mkdir -p "$DOCKER_CONFIG"
+          printf '{ "auths": {} }\n' > "$DOCKER_CONFIG/config.json"
+
+      - name: Seed .env for compose
+        run: cp "/Users/oscarpelegrina/Desktop/Simulacion-Produccion/.env" .env
 
       - name: Seed secrets (.env + JWT)
         run: |
@@ -40,5 +46,3 @@ jobs:
 
       - name: Status
         run: docker compose ps
-
-
