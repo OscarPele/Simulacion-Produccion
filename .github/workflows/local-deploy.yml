@@ -14,10 +14,13 @@ concurrency:
 jobs:
   build-and-restart:
     runs-on: [self-hosted, macOS, ARM64]
-    env:
-      DOCKER_CONFIG: ${{ runner.temp }}/.docker-ci
     steps:
       - uses: actions/checkout@v4
+
+      # Define DOCKER_CONFIG sin usar runner.temp
+      - name: Set DOCKER_CONFIG
+        run: |
+          echo "DOCKER_CONFIG=$RUNNER_TEMP/.docker-ci" >> "$GITHUB_ENV"
 
       - name: Prepare Docker config (no macOS Keychain)
         run: |
