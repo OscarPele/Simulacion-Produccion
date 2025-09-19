@@ -17,7 +17,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # Aislar HOME y DOCKER_CONFIG (sin Keychain)
+      # Guardar el HOME real antes de aislar
+      - name: Capture real HOME
+        run: echo "REAL_HOME=$HOME" >> "$GITHUB_ENV"
+
+      # Aislar HOME/DOCKER_CONFIG para que Docker no use el Keychain
       - name: Isolate Docker config (no Keychain)
         run: |
           echo "HOME=$RUNNER_TEMP/ci-home" >> "$GITHUB_ENV"
@@ -26,7 +30,7 @@ jobs:
           mkdir -p "$RUNNER_TEMP/ci-home/.docker"
           printf '{ "auths": {} }\n' > "$RUNNER_TEMP/ci-home/.docker/config.json"
 
-      # Usar docker compose (v2) o docker-compose (v1), lo que exista
+      # Detectar docker compose (v2) o docker-compose (v1)
       - name: Detect compose command
         run: |
           if docker compose version >/dev/null 2>&1; then
@@ -39,11 +43,11 @@ jobs:
           fi
 
       - name: Seed .env for compose
-        run: cp "/Users/oscarpelegrina/Desktop/Simulacion-Produccion/.env" .env
+        run: cp "$REAL_HOME/Desktop/Simulacion-Produccion/.env" .env
 
       - name: Seed secrets (.env + JWT)
         run: |
-          SRC="$HOME/Desktop/Simulacion-Produccion/.local"
+          SRC="$REAL_HOME/Desktop/Simulacion-Produccion/.local"
           test -f "$SRC/.env" || { echo "::error::Missing $SRC/.env"; exit 1; }
           test -f "$SRC/secrets/jwt/public.pem" || { echo "::error::Missing $SRC/secrets/jwt/public.pem"; exit 1; }
           test -f "$SRC/secrets/jwt/private.pem" || { echo "::error::Missing $SRC/secrets/jwt/private.pem"; exit 1; }
