@@ -17,15 +17,24 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # Define DOCKER_CONFIG sin usar runner.temp
-      - name: Set DOCKER_CONFIG
+      # 1) Evitar Keychain: usar DOCKER_CONFIG temporal con config.json vacío
+      - name: Set DOCKER_CONFIG (no Keychain)
         run: |
           echo "DOCKER_CONFIG=$RUNNER_TEMP/.docker-ci" >> "$GITHUB_ENV"
+          mkdir -p "$RUNNER_TEMP/.docker-ci"
+          printf '{ "auths": {} }\n' > "$RUNNER_TEMP/.docker-ci/config.json"
 
-      - name: Prepare Docker config (no macOS Keychain)
+      # 2) Unificar comando compose en una variable (docker compose | docker-compose)
+      - name: Detect compose command
         run: |
-          mkdir -p "$DOCKER_CONFIG"
-          printf '{ "auths": {} }\n' > "$DOCKER_CONFIG/config.json"
+          if docker compose version >/dev/null 2>&1; then
+            echo "COMPOSE_CMD=docker compose" >> "$GITHUB_ENV"
+          elif docker-compose version >/dev/null 2>&1; then
+            echo "COMPOSE_CMD=docker-compose" >> "$GITHUB_ENV"
+          else
+            echo "::error::No se encontró Docker Compose (ni v2 ni v1). Instala Docker Desktop/compose."
+            exit 1
+          fi
 
       - name: Seed .env for compose
         run: cp "/Users/oscarpelegrina/Desktop/Simulacion-Produccion/.env" .env
@@ -42,10 +51,10 @@ jobs:
           cp "$SRC/secrets/jwt/public.pem"  services/ms-auth/src/main/resources/jwt/public.pem
           cp "$SRC/secrets/jwt/private.pem" services/ms-auth/src/main/resources/jwt/private.pem
 
-      - name: Build & restart (docker compose)
+      - name: Build & restart (compose)
         run: |
-          docker compose build
-          docker compose up -d
+          $COMPOSE_CMD build
+          $COMPOSE_CMD up -d
 
       - name: Status
-        run: docker compose ps
+        run: $COMPOSE_CMD ps
