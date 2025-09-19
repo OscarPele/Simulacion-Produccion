@@ -17,14 +17,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # 1) Evitar Keychain: usar DOCKER_CONFIG temporal con config.json vacío
-      - name: Set DOCKER_CONFIG (no Keychain)
+      # Aislar HOME y DOCKER_CONFIG (sin Keychain)
+      - name: Isolate Docker config (no Keychain)
         run: |
-          echo "DOCKER_CONFIG=$RUNNER_TEMP/.docker-ci" >> "$GITHUB_ENV"
-          mkdir -p "$RUNNER_TEMP/.docker-ci"
-          printf '{ "auths": {} }\n' > "$RUNNER_TEMP/.docker-ci/config.json"
+          echo "HOME=$RUNNER_TEMP/ci-home" >> "$GITHUB_ENV"
+          echo "DOCKER_CONFIG=$RUNNER_TEMP/ci-home/.docker" >> "$GITHUB_ENV"
+          echo 'DOCKER_AUTH_CONFIG={}' >> "$GITHUB_ENV"
+          mkdir -p "$RUNNER_TEMP/ci-home/.docker"
+          printf '{ "auths": {} }\n' > "$RUNNER_TEMP/ci-home/.docker/config.json"
 
-      # 2) Unificar comando compose en una variable (docker compose | docker-compose)
+      # Usar docker compose (v2) o docker-compose (v1), lo que exista
       - name: Detect compose command
         run: |
           if docker compose version >/dev/null 2>&1; then
@@ -32,7 +34,7 @@ jobs:
           elif docker-compose version >/dev/null 2>&1; then
             echo "COMPOSE_CMD=docker-compose" >> "$GITHUB_ENV"
           else
-            echo "::error::No se encontró Docker Compose (ni v2 ni v1). Instala Docker Desktop/compose."
+            echo "::error::No se encontró Docker Compose (ni v2 ni v1)."
             exit 1
           fi
 
