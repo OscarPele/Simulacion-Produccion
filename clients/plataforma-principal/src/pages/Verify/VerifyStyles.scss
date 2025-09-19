@@ -1,0 +1,105 @@
+/* Estilos exclusivos para /verified y /verify-error */
+.verify-card {
+  width: 100%;
+  max-width: 520px;
+  margin: 80px auto;
+  padding: 24px;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  display: grid;
+  gap: 16px;
+  text-align: center;
+
+  /* Enlaces dentro de la tarjeta (aislado) */
+  a {
+    text-decoration: none;
+  }
+
+  .v-icon {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 6px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    font-size: 28px;
+  }
+
+  &.is-success .v-icon {
+    background: rgba(15, 157, 88, 0.12);
+    color: #0f9d58;
+  }
+
+  &.is-error .v-icon {
+    background: rgba(193, 37, 37, 0.12);
+    color: #c12525;
+  }
+
+  h2 {
+    margin: 0;
+    font-size: 1.35rem;
+    line-height: 1.2;
+    color: #1a1a1a;
+  }
+
+  p {
+    margin: 4px 0 0;
+    color: #555;
+    font-size: 0.98rem;
+  }
+
+  .v-hint {
+    color: #777;
+    font-size: 0.9rem;
+  }
+
+  .v-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 8px;
+    flex-wrap: wrap;
+  }
+
+  /* Botones locales: no comparten nombres globales */
+  .v-btn {
+    display: inline-block;
+    border: none;
+    cursor: pointer;
+    border-radius: 12px;
+    font-weight: 500;
+    font-size: 0.95rem;
+    padding: 12px 16px;
+    transition: transform 0.04s ease, background 0.2s ease, opacity 0.2s ease;
+
+    &:focus-visible {
+      outline: 2px solid #0e4ed1;
+      outline-offset: 2px;
+    }
+    &:active { transform: translateY(1px); }
+    &.is-disabled { opacity: 0.6; cursor: not-allowed; }
+  }
+
+  .v-btn--primary {
+    background: #1563ff;
+    color: #fff;
+  }
+  .v-btn--primary:hover {
+    background: #0f56ec;
+  }
+
+  .v-btn--secondary {
+    background: rgba(21, 99, 255, 0.08);
+    color: #1563ff;
+  }
+  .v-btn--secondary:hover {
+    background: rgba(21, 99, 255, 0.14);
+  }
+}
+
+/* Sin efectos fuera de la tarjeta */
+@media (prefers-reduced-motion: reduce) {
+  .verify-card { transition: none; }
+  .verify-card .v-btn { transition: none; }
+}

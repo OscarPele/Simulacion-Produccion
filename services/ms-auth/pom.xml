@@ -134,6 +134,11 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
                     <mainClass>com.oscar.proyecto.ms_auth.MsAuthApplication</mainClass>
+
+                    <profiles>
+                        <profile>dev</profile>
+                    </profiles>
+
                 </configuration>
                 <executions>
                     <execution>

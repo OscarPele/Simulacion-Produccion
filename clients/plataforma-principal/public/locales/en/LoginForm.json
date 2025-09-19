@@ -22,6 +22,10 @@
     "title": "Check your email",
     "body": "If {{email}} exists, we have sent you instructions to reset your password. The link will expire in 15 minutes."
   },
-  "ok": "OK"
-
+  "ok": "OK",
+    "emailNotVerified": "Please verify your email address to continue",
+  "resendVerification": "Resend verification",
+  "resending": "Resending…",
+  "verificationResent": "If the email exists and is not verified, we have resent the verification email.",
+  "verifyEmailHint": "Sent to: {{email}}. If you don't see it, check SPAM."
 }

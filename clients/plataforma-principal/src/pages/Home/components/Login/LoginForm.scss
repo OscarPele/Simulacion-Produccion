@@ -158,3 +158,61 @@
   color: #007BFF;            
   text-decoration: underline;
 }
+
+
+
+/* --- Helpers para estados y avisos --- */
+.info {
+  color: #555;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+}
+
+.success-block {
+  background: #f0fbf4;
+  border: 1px solid rgba(15, 157, 88, 0.2);
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin-top: 8px;
+}
+
+.success-title {
+  color: #0f9d58;
+  font-weight: 600;
+  margin: 0 0 6px 0;
+  font-size: 0.95rem;
+}
+
+.success-hint {
+  color: #2f6b3e;
+  font-size: 0.9rem;
+  margin: 6px 0 0 0;
+}
+
+/* --- Acciones en línea (botones/enlaces juntos) --- */
+.inline-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+
+/* --- Botón secundario coherente con primario --- */
+.secondary-button {
+  border: none;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: rgba(21, 99, 255, 0.08);
+  color: #1563ff;
+  font-weight: 500;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background 0.2s ease, opacity 0.2s ease;
+
+  &:hover { background: rgba(21, 99, 255, 0.14); }
+  &:disabled { opacity: 0.6; cursor: not-allowed; }
+  &:focus-visible {
+    outline: 2px solid #1563ff;
+    outline-offset: 2px;
+  }
+}

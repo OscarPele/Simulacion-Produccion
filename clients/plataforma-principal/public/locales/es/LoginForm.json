@@ -21,6 +21,10 @@
     "title": "Revisa tu correo",
     "body": "Si {{email}} existe, te hemos enviado instrucciones para restablecer tu contraseña. El enlace caduca en 15 minutos."
   },
-  "ok": "Entendido"
-
+  "ok": "Entendido",
+  "emailNotVerified": "Debes verificar tu correo para continuar",
+  "resendVerification": "Reenviar verificación",
+  "resending": "Reenviando…",
+  "verificationResent": "Si el correo existe y no está verificado, hemos reenviado el email de verificación.",
+  "verifyEmailHint": "Enviado a: {{email}}. Si no lo ves, revisa SPAM."
 }

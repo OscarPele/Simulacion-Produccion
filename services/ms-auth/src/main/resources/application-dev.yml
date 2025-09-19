@@ -1,0 +1,25 @@
+
+server:
+  port: 8090
+  address: 0.0.0.0
+
+management:
+  health:
+    mail:
+      enabled: false
+  endpoint:
+    health:
+      group:
+        readiness:
+          include: db,diskSpace,ping
+
+app:
+  verify-email:
+    ttl-hours: 24
+    backend-verify-url: http://localhost:8090/auth/verify-email
+    frontend-success-url: http://localhost:5173/verified
+    frontend-error-url: http://localhost:5173/verify-error
+
+  password-reset:
+    link-base: http://localhost:5173/reset-password
+

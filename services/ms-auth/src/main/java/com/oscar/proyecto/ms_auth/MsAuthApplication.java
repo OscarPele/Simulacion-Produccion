@@ -18,16 +18,5 @@ public class MsAuthApplication {
     public static void main(String[] args) {
         SpringApplication.run(MsAuthApplication.class, args);
     }
-    @RestController
-    static class TestController {
-        @GetMapping(path = "/test/protected")
-        public Map<String, Object> protectedPing(Principal principal) {
-            return Map.of(
-                    "ok", true,
-                    "user", principal != null ? principal.getName() : null,
-                    "ts", Instant.now().toString(),
-                    "message", "ms-auth protected OK."
-            );
-        }
-    }
+
 }

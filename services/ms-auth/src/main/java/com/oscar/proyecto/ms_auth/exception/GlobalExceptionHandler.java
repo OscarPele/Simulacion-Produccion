@@ -20,6 +20,13 @@ public class GlobalExceptionHandler {
 
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
+
+    @ExceptionHandler(EmailNotVerifiedException.class)
+    public ResponseEntity<Map<String, String>> handleEmailNotVerified(EmailNotVerifiedException ex) {
+        System.out.println(ex.getClass().getName() + ": EMAIL_NOT_VERIFIED");
+        return buildResponse(HttpStatus.FORBIDDEN, "EMAIL_NOT_VERIFIED");
+    }
+
     @ExceptionHandler(UsernameAlreadyExistsException.class)
     public ResponseEntity<Map<String, String>> handleUsernameExists(UsernameAlreadyExistsException ex) {
         System.out.println(ex.getClass().getName() + ": " + ex.getMessage());

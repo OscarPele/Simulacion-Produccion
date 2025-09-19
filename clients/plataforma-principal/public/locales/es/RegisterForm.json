@@ -18,5 +18,10 @@
   "usernameRequired": "El nombre de usuario es obligatorio",
   "emailRequired": "El correo electrónico es obligatorio",
   "invalidForm": "Revisa los campos del formulario",
-  "serverError": "Error del servidor — inténtalo de nuevo más tarde"
+  "serverError": "Error del servidor — inténtalo de nuevo más tarde",
+  "verifyEmailMessage": "Te hemos enviado un correo de verificación. Revisa tu bandeja de entrada y la carpeta de spam.",
+  "verifyEmailHint": "Enviado a: {{email}}. Si no lo ves, revisa SPAM.",
+  "resendVerification": "Reenviar verificación",
+  "resending": "Reenviando…",
+  "goToLogin": "Ir a iniciar sesión"
 }

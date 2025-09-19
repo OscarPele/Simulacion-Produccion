@@ -24,7 +24,7 @@ public class User {
     private String passwordHash;
 
     @Column(nullable = false)
-    private boolean enabled = true;
+    private boolean enabled = false;
 
     @Column(nullable = false, updatable = false)
     private Instant createdAt;
