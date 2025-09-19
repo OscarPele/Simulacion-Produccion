@@ -1,10 +1,6 @@
 package com.oscar.proyecto.ms_auth.user;
 
-import com.oscar.proyecto.ms_auth.exception.CurrentPasswordIncorrectException;
-import com.oscar.proyecto.ms_auth.exception.EmailAlreadyExistsException;
-import com.oscar.proyecto.ms_auth.exception.InvalidCredentialsException;
-import com.oscar.proyecto.ms_auth.exception.UsernameAlreadyExistsException;
-import com.oscar.proyecto.ms_auth.exception.UserNotFoundException;
+import com.oscar.proyecto.ms_auth.exception.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,6 +39,10 @@ public class UserService {
         if (!encoder.matches(rawPassword, user.getPasswordHash())) {
             throw new InvalidCredentialsException();
         }
+        if (!user.isEnabled()) {
+            throw new EmailNotVerifiedException(); // ⬅️ aquí el cambio
+        }
+
         return user;
     }
 

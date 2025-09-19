@@ -1,3 +1,5 @@
+// Configuración de las URLs base para las APIs, obtenidas de las variables de entorno
+// y normalizadas para evitar errores de concatenación de rutas.
 export const API_AUTH_BASE = (() => {
   const raw = import.meta.env.VITE_API_AUTH_URL as string;
   if (!raw) return '';

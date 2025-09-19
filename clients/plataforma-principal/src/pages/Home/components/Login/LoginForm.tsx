@@ -4,7 +4,8 @@ import { FiUser, FiLock, FiEye, FiEyeOff } from 'react-icons/fi';
 import './LoginForm.scss';
 import { useNavigate } from 'react-router-dom';
 import { login, type TokenResponse } from '../../../../api/token/authClient';
-import { forgotPassword } from '../../../../api/users/passwordResetClient'; 
+import { forgotPassword } from '../../../../api/users/passwordResetClient';
+import { authApiUrl } from '../../../../api/config';
 
 type LoginRequest = { usernameOrEmail: string; password: string };
 
@@ -22,10 +23,17 @@ export default function LoginForm({ onSuccess, onGoRegister }: Props) {
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  // 👉 estado para el modal "email enviado"
+  // Forgot password modal/state
   const [forgotOpen, setForgotOpen] = useState(false);
   const [forgotLoading, setForgotLoading] = useState(false);
   const [maskedEmail, setMaskedEmail] = useState('');
+
+  // Email no verificado (para mostrar CTA de reenviar verificación)
+  const [notVerifiedEmail, setNotVerifiedEmail] = useState<string | null>(null);
+  const [resendLoading, setResendLoading] = useState(false);
+  const [resendInfo, setResendInfo] = useState<string | null>(null);
+
+  const resendEndpoint = authApiUrl('/auth/verify-email/request');
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -51,7 +59,8 @@ export default function LoginForm({ onSuccess, onGoRegister }: Props) {
     const dParts = d.split('.');
     const dn = dParts[0] || '';
     const rest = dParts.slice(1).join('.');
-    const mDom = dn.length <= 2 ? '*'.repeat(dn.length) : `${dn.at(0)}${'*'.repeat(Math.max(dn.length - 2, 1))}${dn.at(-1)}`;
+    const mDom =
+      dn.length <= 2 ? '*'.repeat(dn.length) : `${dn.at(0)}${'*'.repeat(Math.max(dn.length - 2, 1))}${dn.at(-1)}`;
     return `${mUser}@${mDom}${rest ? '.' + rest : ''}`;
   };
 
@@ -68,14 +77,34 @@ export default function LoginForm({ onSuccess, onGoRegister }: Props) {
     setErrorMsg(null);
     setForgotLoading(true);
     try {
-      // Llamada al backend; siempre mostrará el mismo resultado (204) aunque el email no exista
-      await forgotPassword(email);
+      await forgotPassword(email); // 204 siempre por privacidad
     } catch {
-      // Por privacidad y DX, mostramos el mismo modal aunque falle
+      // mostramos el mismo modal aunque falle (privacy UX)
     } finally {
       setMaskedEmail(maskEmail(email));
       setForgotOpen(true);
       setForgotLoading(false);
+    }
+  };
+
+  const handleResendVerification = async () => {
+    if (!notVerifiedEmail || resendLoading) return;
+    setResendLoading(true);
+    setResendInfo(null);
+    try {
+      await fetch(resendEndpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({ email: notVerifiedEmail })
+      });
+      setResendInfo(
+        t('verificationResent') ||
+          'If the email exists and is not verified, we have resent the verification email.'
+      );
+    } catch {
+      setResendInfo(t('errorConnecting') || 'Could not connect to the server');
+    } finally {
+      setResendLoading(false);
     }
   };
 
@@ -88,6 +117,8 @@ export default function LoginForm({ onSuccess, onGoRegister }: Props) {
     }
 
     setErrorMsg(null);
+    setNotVerifiedEmail(null);
+    setResendInfo(null);
     setLoading(true);
 
     try {
@@ -99,10 +130,22 @@ export default function LoginForm({ onSuccess, onGoRegister }: Props) {
       const data = await login(payload);
       onSuccess?.(data);
       setForm({ usernameOrEmail: '', password: '' });
-      setErrorMsg(null);
       navigate('/main');
     } catch (err: any) {
       const msg = String(err?.message ?? '');
+
+      // Detecta explícitamente el caso de email no verificado:
+      // el backend responde 403 con body {"code":"EMAIL_NOT_VERIFIED"}.
+      // Tu cliente `login()` probablemente incorpore el status/código en el mensaje.
+      if (msg.includes('EMAIL_NOT_VERIFIED') || /_403$/.test(msg)) {
+        // Solo mostramos CTA de reenvío si lo introducido parece un email
+        const emailCandidate = form.usernameOrEmail.trim();
+        if (isValidEmail(emailCandidate)) setNotVerifiedEmail(emailCandidate);
+        setErrorMsg(t('emailNotVerified') || 'Please verify your email address to continue');
+        setLoading(false);
+        return;
+      }
+
       if (msg.startsWith('LOGIN_FAILED_')) {
         if (msg.endsWith('_401')) {
           setErrorMsg(t('invalidCredentials') || 'Invalid credentials');
@@ -114,7 +157,7 @@ export default function LoginForm({ onSuccess, onGoRegister }: Props) {
           setErrorMsg(t('errorWithCode', { code: msg.split('_').pop() }));
         }
       } else {
-        setErrorMsg(t('errorConnecting'));
+        setErrorMsg(t('errorConnecting') || 'Could not connect to the server');
       }
     } finally {
       setLoading(false);
@@ -164,8 +207,8 @@ export default function LoginForm({ onSuccess, onGoRegister }: Props) {
             </button>
           </div>
 
-          {/* Enlace "¿Olvidaste la contraseña?" con validación + modal */}
-          <div className='forgot-container'>
+          {/* Forgot password */}
+          <div className="forgot-container">
             <p className="forgot-text">
               <a
                 href="#forgot"
@@ -181,7 +224,31 @@ export default function LoginForm({ onSuccess, onGoRegister }: Props) {
               <p role="alert" aria-live="polite" className="error">{errorMsg}</p>
             )}
           </div>
-          
+
+          {/* Bloque especial cuando el email no está verificado */}
+          {notVerifiedEmail && (
+            <div className="success-block" role="status" aria-live="polite">
+              <p className="success-title">
+                {t('emailNotVerified') || 'Please verify your email address to continue'}
+              </p>
+              <p className="success-hint">
+                {t('verifyEmailHint', { email: notVerifiedEmail }) ||
+                  `Sent to: ${notVerifiedEmail}. If you don't see it, check SPAM.`}
+              </p>
+              <div className="inline-actions">
+                <button
+                  type="button"
+                  className="secondary-button"
+                  onClick={handleResendVerification}
+                  disabled={resendLoading}
+                >
+                  {resendLoading ? (t('resending') || 'Resending…') : (t('resendVerification') || 'Resend verification')}
+                </button>
+              </div>
+              {resendInfo && <p className="info">{resendInfo}</p>}
+            </div>
+          )}
+
           <button type="submit" className="primary-button" disabled={!canSubmit}>
             {loading ? t('loggingIn') : t('login')}
           </button>
@@ -199,7 +266,7 @@ export default function LoginForm({ onSuccess, onGoRegister }: Props) {
         </fieldset>
       </form>
 
-      {/* Modal de confirmación (reutiliza clases de UserMenu) */}
+      {/* Modal de confirmación reset password */}
       {forgotOpen && (
         <div className="modal-backdrop" onClick={() => setForgotOpen(false)}>
           <div
@@ -210,13 +277,9 @@ export default function LoginForm({ onSuccess, onGoRegister }: Props) {
             onClick={(e) => e.stopPropagation()}
           >
             <h3 id="reset-title">{t('resetEmailModal.title')}</h3>
-            <p>
-              {t('resetEmailModal.body', { email: maskedEmail })}
-            </p>
+            <p>{t('resetEmailModal.body', { email: maskedEmail })}</p>
             <div className="modal-actions">
-              <button type="button" onClick={() => setForgotOpen(false)}>
-                {t('ok')}
-              </button>
+              <button type="button" onClick={() => setForgotOpen(false)}>{t('ok')}</button>
             </div>
           </div>
         </div>

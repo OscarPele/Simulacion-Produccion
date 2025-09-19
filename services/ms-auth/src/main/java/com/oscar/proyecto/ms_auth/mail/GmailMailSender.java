@@ -10,15 +10,15 @@ import org.springframework.stereotype.Service;
 
 @Service
 @Primary
-public class SmtpMailSender implements MailSenderPort {
+public class GmailMailSender implements MailSenderPort {
 
     private final JavaMailSender mailSender;
     private final String from;
     private final String replyTo;
 
-    public SmtpMailSender(JavaMailSender mailSender,
-                          @Value("${app.mail.from:no-reply@localhost}") String from,
-                          @Value("${app.mail.replyTo:}") @Nullable String replyTo) {
+    public GmailMailSender(JavaMailSender mailSender,
+                           @Value("${app.mail.from}") String from,
+                           @Value("${app.mail.replyTo:}") @Nullable String replyTo) {
         this.mailSender = mailSender;
         this.from = from;
         this.replyTo = replyTo == null ? "" : replyTo;
@@ -33,9 +33,12 @@ public class SmtpMailSender implements MailSenderPort {
             helper.setTo(to);
             if (!replyTo.isBlank()) helper.setReplyTo(replyTo);
             helper.setSubject(subject);
-            helper.setText(htmlBody, true); // true => HTML
+            helper.setText(htmlBody, true); // HTML
             mailSender.send(msg);
-        } catch (Exception ignored) {
+        } catch (Exception e) {
+            // Logea el motivo para depurar credenciales / bloqueo de Google
+            System.err.println("[GMAIL_MAIL_SENDER] Error enviando correo: " + e.getMessage());
+            throw new RuntimeException("MAIL_SEND_FAILED", e);
         }
     }
 }

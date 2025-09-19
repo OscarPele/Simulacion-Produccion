@@ -18,5 +18,10 @@
   "usernameRequired": "Username is required",
   "emailRequired": "Email is required",
   "invalidForm": "Please review the form fields",
-  "serverError": "Server error — please try again later"
+  "serverError": "Server error — please try again later",
+  "verifyEmailMessage": "We've sent you a verification email. Please check your inbox and spam folder.",
+  "verifyEmailHint": "Sent to: {{email}}. If you don't see it, check SPAM.",
+  "resendVerification": "Resend verification",
+  "resending": "Resending…",
+  "goToLogin": "Go to login"
 }

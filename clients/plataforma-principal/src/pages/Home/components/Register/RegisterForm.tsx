@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FiUser, FiMail, FiLock, FiEye, FiEyeOff } from 'react-icons/fi';
 import '../Login/LoginForm.scss';
-import { authApiUrl } from '../../../../api/config'; 
+import { authApiUrl } from '../../../../api/config';
 
 type RegisterRequest = { username: string; email: string; password: string };
 
@@ -12,13 +12,18 @@ type Props = {
 
 export default function RegisterForm({ onGoLogin }: Props) {
   const { t } = useTranslation('RegisterForm');
-  const endpoint = authApiUrl('/auth/register'); 
+
+  const registerEndpoint = authApiUrl('/auth/register');
+  const resendEndpoint   = authApiUrl('/auth/verify-email/request');
 
   const [form, setForm] = useState<RegisterRequest>({ username: '', email: '', password: '' });
   const [showPwd, setShowPwd] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
+  const [lastRegisteredEmail, setLastRegisteredEmail] = useState<string | null>(null);
+  const [resendInfo, setResendInfo] = useState<string | null>(null);
+  const [resendLoading, setResendLoading] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -54,6 +59,7 @@ export default function RegisterForm({ onGoLogin }: Props) {
     setLoading(true);
     setErrorMsg(null);
     setSuccessMsg(null);
+    setResendInfo(null);
 
     try {
       const payload: RegisterRequest = {
@@ -62,9 +68,9 @@ export default function RegisterForm({ onGoLogin }: Props) {
         password: form.password,
       };
 
-      const res = await fetch(endpoint, {
+      const res = await fetch(registerEndpoint, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
         body: JSON.stringify(payload),
       });
 
@@ -74,40 +80,55 @@ export default function RegisterForm({ onGoLogin }: Props) {
         const code = body?.code ?? '';
 
         if (res.status === 400) {
-          if (code === 'USERNAME_EXISTS') {
-            setErrorMsg(t('usernameTaken') || 'El nombre de usuario ya existe');
-            return;
-          }
-          if (code === 'EMAIL_EXISTS') {
-            setErrorMsg(t('emailTaken') || 'El email ya está registrado');
-            return;
-          }
-          if (code === 'VALIDATION_ERROR') {
-            setErrorMsg(t('invalidForm') || 'Formulario inválido');
-            return;
-          }
+          if (code === 'USERNAME_EXISTS') { setErrorMsg(t('usernameTaken') || 'El nombre de usuario ya existe'); return; }
+          if (code === 'EMAIL_EXISTS')    { setErrorMsg(t('emailTaken') || 'El email ya está registrado'); return; }
+          if (code === 'VALIDATION_ERROR'){ setErrorMsg(t('invalidForm') || 'Formulario inválido'); return; }
         }
 
         if (res.status >= 500) {
-          setErrorMsg(t('serverError') || `Server error (${res.status}) - please try again later`);
+          setErrorMsg(t('serverError') || `Server error (${res.status}) — please try again later`);
           return;
         }
 
-        setErrorMsg(t('errorWithCode', { code: res.status }));
+        setErrorMsg(t('errorWithCode', { code: res.status }) || `Error ${res.status}`);
         return;
       }
 
+      // Guardamos email para "Reenviar verificación"
+      setLastRegisteredEmail(payload.email);
+      // Limpiamos form
       setForm({ username: '', email: '', password: '' });
-      setSuccessMsg(t('registeredSuccessfully') || 'Registrado correctamente');
 
-      setTimeout(() => {
-        setSuccessMsg(null);
-        onGoLogin?.();
-      }, 3000);
+      // Mensaje claro de verificación
+      setSuccessMsg(
+        t('verifyEmailMessage') ||
+          '¡Registro completado! Te hemos enviado un correo para verificar tu cuenta. Revisa tu bandeja y SPAM.'
+      );
     } catch {
-      setErrorMsg(t('errorConnecting'));
+      setErrorMsg(t('errorConnecting') || 'Error de conexión');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleResend = async () => {
+    if (!lastRegisteredEmail || resendLoading) return;
+    setResendLoading(true);
+    setResendInfo(null);
+    try {
+      await fetch(resendEndpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({ email: lastRegisteredEmail }),
+      });
+      setResendInfo(
+        t('verificationResent') ||
+          'Si el correo existe y no está verificado, hemos reenviado el email de verificación.'
+      );
+    } catch {
+      setResendInfo(t('errorConnecting') || 'Error de conexión');
+    } finally {
+      setResendLoading(false);
     }
   };
 
@@ -169,15 +190,36 @@ export default function RegisterForm({ onGoLogin }: Props) {
           </button>
         </div>
 
-        <small className="signup-text" style={{ marginTop: 0 }}>
-          {t('passwordHint')}
-        </small>
+        <small className="signup-text">{t('passwordHint')}</small>
 
         {errorMsg && <p role="alert" aria-live="polite" className="error">{errorMsg}</p>}
-        {successMsg && <p role="alert" aria-live="polite" className="success">{successMsg}</p>}
+
+        {successMsg && (
+          <div className="success-block" role="status" aria-live="polite">
+            <p className="success-title">{successMsg}</p>
+            {lastRegisteredEmail && (
+              <>
+                <p className="success-hint">
+                  {t('verifyEmailHint', { email: lastRegisteredEmail }) || `Enviado a: ${lastRegisteredEmail}. Si no lo ves, revisa SPAM.`}
+                </p>
+                <div className="inline-actions">
+                  <button
+                    type="button"
+                    className="secondary-button"
+                    onClick={handleResend}
+                    disabled={resendLoading}
+                  >
+                    {resendLoading ? (t('resending') || 'Reenviando…') : (t('resendVerification') || 'Reenviar verificación')}
+                  </button>
+                </div>
+                {resendInfo && <p className="info">{resendInfo}</p>}
+              </>
+            )}
+          </div>
+        )}
 
         <button type="submit" className="primary-button" disabled={!canSubmit}>
-          {loading ? t('creatingAccount') : t('createAccount')}
+          {loading ? (t('creatingAccount') || 'Creando cuenta…') : (t('createAccount') || 'Crear cuenta')}
         </button>
 
         <p className="signup-text">

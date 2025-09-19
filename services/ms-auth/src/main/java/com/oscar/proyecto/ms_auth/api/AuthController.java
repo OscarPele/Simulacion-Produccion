@@ -6,6 +6,7 @@ import com.oscar.proyecto.ms_auth.token.RefreshTokenService;
 import com.oscar.proyecto.ms_auth.user.User;
 import com.oscar.proyecto.ms_auth.user.UserService;
 import com.oscar.proyecto.ms_auth.password.PasswordResetService;
+import com.oscar.proyecto.ms_auth.verification.EmailVerificationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -26,15 +27,18 @@ public class AuthController {
     private final JwtService jwtService;
     private final RefreshTokenService refreshTokenService;
     private final PasswordResetService passwordResetService;
+    private final EmailVerificationService emailVerificationService;
 
     public AuthController(UserService userService,
                           JwtService jwtService,
                           RefreshTokenService refreshTokenService,
-                          PasswordResetService passwordResetService) {
+                          PasswordResetService passwordResetService,
+                          EmailVerificationService emailVerificationService) {
         this.userService = userService;
         this.jwtService = jwtService;
         this.refreshTokenService = refreshTokenService;
         this.passwordResetService = passwordResetService;
+        this.emailVerificationService = emailVerificationService;
     }
 
     @Operation(
@@ -44,6 +48,7 @@ public class AuthController {
                     - **username**: mínimo 3, máximo 50 caracteres, no vacío.
                     - **email**: formato válido, máximo 120 caracteres.
                     - **password**: mínimo 8, máximo 128 caracteres.
+                    Tras registrar, se envía un email de verificación y la cuenta queda deshabilitada hasta confirmar.
                     """,
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     required = true,
@@ -63,7 +68,7 @@ public class AuthController {
             responses = {
                     @ApiResponse(
                             responseCode = "200",
-                            description = "Usuario registrado correctamente",
+                            description = "Usuario registrado correctamente (email de verificación enviado)",
                             content = @Content(schema = @Schema(implementation = UserResponse.class))
                     ),
                     @ApiResponse(responseCode = "400", description = "Datos inválidos o usuario/email ya existente")
@@ -72,6 +77,7 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<UserResponse> register(@Valid @RequestBody RegisterRequest request) {
         User newUser = userService.register(request.username(), request.email(), request.password());
+        emailVerificationService.send(newUser);
         return ResponseEntity.ok(new UserResponse(
                 newUser.getId(),
                 newUser.getUsername(),
@@ -121,7 +127,6 @@ public class AuthController {
                 Map.of("uid", user.getId())
         );
 
-        // Crear refresh (devuelve solo el plaintext para el cliente)
         RefreshTokenService.IssuedRefresh issued = refreshTokenService.create(user);
 
         return ResponseEntity.ok(new TokenResponse(
@@ -202,7 +207,7 @@ public class AuthController {
     public ResponseEntity<Void> logout(@Valid @RequestBody RefreshTokenRequest request) {
         try {
             refreshTokenService.revoke(request.refreshToken());
-        } catch (Exception ignored) { /* No filtramos si el token no existe */ }
+        } catch (Exception ignored) { }
         return ResponseEntity.noContent().build();
     }
 
@@ -229,11 +234,9 @@ public class AuthController {
         try {
             var userRef = refreshTokenService.validateAndGetUserRef(request.refreshToken());
             refreshTokenService.revokeAllByUserId(userRef.id());
-        } catch (Exception ignored) { /* Idem: no filtramos info */ }
+        } catch (Exception ignored) { }
         return ResponseEntity.noContent().build();
     }
-
-
 
     @Operation(
             summary = "Solicitar restablecimiento de contraseña",
@@ -260,7 +263,6 @@ public class AuthController {
     )
     @PostMapping("/forgot-password")
     public ResponseEntity<Void> forgotPassword(@Valid @RequestBody ForgotPasswordRequest request) {
-        // La implementación del servicio NO debe revelar si el email existe.
         passwordResetService.requestReset(request.email());
         return ResponseEntity.noContent().build();
     }
@@ -301,5 +303,4 @@ public class AuthController {
             return ResponseEntity.status(ex.getStatusCode()).build();
         }
     }
-
 }

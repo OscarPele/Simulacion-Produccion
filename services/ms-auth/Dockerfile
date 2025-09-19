@@ -27,4 +27,4 @@ WORKDIR /app
 COPY --from=build /src/services/ms-auth/target/*.jar /app/ms-auth.jar
 USER 1001
 EXPOSE 8081
-ENTRYPOINT ["java","-jar","/app/ms-auth.jar"]
+ENTRYPOINT ["java","-jar","/app/ms-auth.jar","--spring.profiles.active=prod"]
