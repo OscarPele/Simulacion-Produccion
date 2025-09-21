@@ -1,0 +1,44 @@
+.componente-prueba {
+  max-width: 980px;
+  margin: 16px auto;
+  padding: 16px;
+
+  .cp-title { margin: 0 0 6px; }
+  .cp-subtitle { margin: 0 0 12px; color: #666; }
+
+  .cp-grid {
+    display: grid;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 4px;
+  }
+
+  .cp-result {
+    margin-top: 12px;
+  }
+
+  .cp-result-title { font-weight: 600; margin-bottom: 4px; }
+  .cp-error { color: #b91c1c; }
+
+  .cp-code {
+    display: block;
+    margin-bottom: 6px;
+    user-select: all;
+  }
+
+  .cp-pre {
+    background: #0b1020;
+    color: #e5e7eb;
+    padding: 10px 12px;
+    border-radius: 10px;
+    overflow-x: auto;
+    font-size: 13px;
+    line-height: 1.4;
+  }
+}

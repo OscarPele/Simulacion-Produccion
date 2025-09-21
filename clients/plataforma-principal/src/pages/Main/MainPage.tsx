@@ -1,6 +1,8 @@
 import './MainPage.scss';
 import UserMenu from './components/Nav/UserMenu/UserMenu';
 import myLogo from '../../assets/verticalLogo.png';
+import ComponentePrueba from './componentePrueba';
+
 
 export default function MainPage() {
   
@@ -15,7 +17,7 @@ export default function MainPage() {
       </nav>
 
       <main className="main-content">
-
+        <ComponentePrueba />
       </main>
     </div>
   );
