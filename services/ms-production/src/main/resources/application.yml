@@ -1,0 +1,49 @@
+spring:
+  application:
+    name: ms-production
+  jackson:
+    time-zone: Europe/Madrid
+    serialization:
+      indent_output: false
+  datasource:
+    url: jdbc:postgresql://localhost:5432/authdb
+    username: auth_user
+    password: secret
+    hikari:
+      maximum-pool-size: 10
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+    show-sql: false
+    properties:
+      hibernate.default_schema: production
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  health:
+    mail:
+      enabled: false
+  endpoint:
+    health:
+      show-details: always
+      group:
+        readiness:
+          include: db,diskSpace,ping
+
+app:
+  jwt:
+    issuer: ms-auth
+    public-key-location: classpath:jwt/public.pem
+
+security:
+  permit-all: /actuator/health,/actuator/info,/api/production/public/**,/production/public/**
+
+
+cors:
+  allowed-origins: ""
+  allowed-methods: "GET,POST,PUT,DELETE,OPTIONS"
+  allowed-headers: "*"

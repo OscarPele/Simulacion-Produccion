@@ -1,0 +1,14 @@
+
+server:
+  port: 8092
+  address: 0.0.0.0
+
+management:
+  health:
+    mail:
+      enabled: false
+  endpoint:
+    health:
+      group:
+        readiness:
+          include: db,diskSpace,ping

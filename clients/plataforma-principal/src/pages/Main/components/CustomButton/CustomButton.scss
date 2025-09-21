@@ -1,0 +1,32 @@
+.boton-con-texto {
+  position: relative;   // importante
+  display: inline-block;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+
+  .custom-button {
+    width: 120px;
+    display: block;
+  }
+
+  .texto-en-boton {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); // centra el texto
+    color: white;
+    font-weight: bold;
+    font-size: 16px;
+    pointer-events: none; // el texto no bloquea el click en la imagen
+  }
+
+  &:hover {
+    transform: scale(1.05);              // efecto al pasar el ratón
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  }
+
+  &:active {
+    transform: scale(0.9);               // efecto al hacer click
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  }
+}

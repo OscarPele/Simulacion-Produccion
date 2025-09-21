@@ -20,7 +20,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  background: rgba(241, 240, 240, 0.41);
+  background: rgba(224, 176, 78, 0.10);
   border-radius: 15px;
   padding: 16px;
   box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.02);
@@ -28,8 +28,8 @@
 
   &:focus-within {
     box-shadow:
-      inset 0 0 0 2px #1563ff,         
-      inset 0 0 0 4px rgba(21, 99, 255, 0.15),
+      inset 0 0 0 2px #E0B04E,         
+      inset 0 0 0 4px rgba(224, 176, 78, 0.20),
       inset 0 0 0 1px rgba(0, 0, 0, 0.02); 
   }
 
@@ -40,11 +40,12 @@
     background: transparent;
     outline: none;
     font-size: 0.95rem;
-    color: #1a1a1a;
+    color: #ffffff;
+    font-family: 'MedievalSharp';
 
-    &::placeholder { opacity: 0.6; }
+    &::placeholder { color: #FFE7B3; opacity: 0.6; }
     &[aria-invalid="true"] ~ .right-icon,
-    &[aria-invalid="true"] { caret-color: #c12525; }
+    &[aria-invalid="true"] { caret-color: #D04A2A; }
   }
 
   .left-icon,
@@ -65,7 +66,7 @@
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px #1563ff;
+      box-shadow: inset 0 0 0 2px #E0B04E;
     }
   }
 }
@@ -78,12 +79,12 @@
 
 .link,
 .signup-link {
-  color: #1563ff;
+  color: #E0B04E;
   text-decoration: none;
 
   &:hover { text-decoration: underline; }
   &:focus-visible {
-    outline: 2px solid #1563ff;
+    outline: 2px solid #E0B04E;
     outline-offset: 2px;
     border-radius: 6px;
   }
@@ -93,37 +94,18 @@
 .signup-link { font-weight: 600; font-size: 1rem; }
 
 .error {
-  color: #c12525;
+  color: #D04A2A;
   font-size: 0.9rem;
   margin: 4px 8px 0;
 }
 
-.primary-button {
-  width: 100%;
-  padding: 16px 18px;
-  margin-top: 1rem;
-  border: none;
-  border-radius: 15px;
-  background: #1563ff;
-  color: #ffffff;
-  font-weight: 500;
-  font-size: 1rem;
-  cursor: pointer;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
-  transition: transform 0.04s ease, background 0.2s ease, opacity 0.2s ease;
 
-  &:active { transform: translateY(1px); background: #0e4ed1; }
-  &:disabled { opacity: 0.6; cursor: not-allowed; }
-  &:focus-visible {
-    outline: 2px solid #0e4ed1;
-    outline-offset: 2px;
-  }
-}
+
 
 .signup-text {
   text-align: center;
   font-size: 0.9rem;
-  color: #868686;
+  color: #ffffff;
   margin-top: 12px;
 }
 
@@ -133,7 +115,7 @@
 }
 
 .success {
-  color: #0f9d58;
+  color: #E0B04E;
   font-size: 0.9rem;
   margin-top: 0.5rem;
 }
@@ -149,13 +131,13 @@
 }
 
 .forgot-link {
-  color: #555;               
+  color: #C8B68A;               
   font-size: 0.9rem;          
   text-decoration: none;      
 }
 
 .forgot-link:hover {
-  color: #007BFF;            
+  color: #E9B23E;            
   text-decoration: underline;
 }
 
@@ -163,28 +145,28 @@
 
 /* --- Helpers para estados y avisos --- */
 .info {
-  color: #555;
+  color: #C6B17B;
   font-size: 0.9rem;
   margin-top: 0.5rem;
 }
 
 .success-block {
-  background: #f0fbf4;
-  border: 1px solid rgba(15, 157, 88, 0.2);
+  background: #FFF8E1;
+  border: 1px solid rgba(224, 176, 78, 0.35);
   border-radius: 12px;
   padding: 12px 14px;
   margin-top: 8px;
 }
 
 .success-title {
-  color: #0f9d58;
+  color: #E0B04E;
   font-weight: 600;
   margin: 0 0 6px 0;
   font-size: 0.95rem;
 }
 
 .success-hint {
-  color: #2f6b3e;
+  color: #A67C1B;
   font-size: 0.9rem;
   margin: 6px 0 0 0;
 }
@@ -202,17 +184,147 @@
   border: none;
   padding: 12px 14px;
   border-radius: 12px;
-  background: rgba(21, 99, 255, 0.08);
-  color: #1563ff;
+  background: rgba(224, 176, 78, 0.12);
+  color: #E0B04E;
   font-weight: 500;
   font-size: 0.95rem;
   cursor: pointer;
   transition: background 0.2s ease, opacity 0.2s ease;
 
-  &:hover { background: rgba(21, 99, 255, 0.14); }
+  &:hover { background: rgba(224, 176, 78, 0.18); }
   &:disabled { opacity: 0.6; cursor: not-allowed; }
   &:focus-visible {
-    outline: 2px solid #1563ff;
+    outline: 2px solid #E0B04E;
     outline-offset: 2px;
   }
 }
+
+
+
+
+
+
+
+
+
+/* --- Botón primario — look dorado con brillo y relieve --- */
+.primary-button {
+  /* layout */
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  /* base */
+  appearance: none;
+  border: 0;
+  border-radius: 14px;
+  padding: 14px 16px;
+  font-size: 1rem;
+  font-weight: 700;
+  font-family: 'Cinzel', system-ui, sans-serif;
+  letter-spacing: .2px;
+  color: #1e1405; /* texto oscuro para buen contraste sobre dorado */
+
+  /* dorado con leve relieve */
+  background:
+    linear-gradient(180deg, #FFD789 0%, #E0B04E 60%, #C7922F 100%);
+  box-shadow:
+    0 8px 22px rgba(224, 176, 78, 0.25),     /* halo exterior */
+    inset 0 1px 0 rgba(255, 255, 255, 0.35), /* brillo superior */
+    inset 0 -1px 0 rgba(0, 0, 0, 0.25);      /* sombra inferior */
+
+  cursor: pointer;
+  transition: transform .12s ease, box-shadow .2s ease, filter .2s ease;
+
+  /* pequeño “sheen” diagonal */
+  position: relative;
+  overflow: hidden;
+  &::after {
+    content: "";
+    position: absolute;
+    inset: -200% -50% auto -50%;
+    height: 200%;
+    transform: rotate(20deg);
+    background: linear-gradient(90deg,
+      transparent 0%,
+      rgba(255,255,255,.22) 45%,
+      rgba(255,255,255,.06) 60%,
+      transparent 100%);
+    opacity: 0;
+    transition: opacity .2s ease, transform .2s ease;
+    pointer-events: none;
+  }
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow:
+      0 10px 26px rgba(224, 176, 78, 0.32),
+      inset 0 1px 0 rgba(255, 255, 255, 0.4),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.28);
+    &::after { opacity: 1; transform: rotate(20deg) translateY(-6%); }
+  }
+
+  &:active {
+    transform: translateY(0);
+    box-shadow:
+      0 4px 14px rgba(224, 176, 78, 0.2),
+      inset 0 3px 10px rgba(0, 0, 0, 0.35);
+    filter: saturate(0.95);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow:
+      0 0 0 2px #0f0f0f,
+      0 0 0 4px rgba(224, 176, 78, 0.65),
+      0 12px 28px rgba(224, 176, 78, 0.28),
+      inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  }
+
+  /* Estado deshabilitado */
+  &:disabled,
+  &[aria-disabled="true"] {
+    cursor: not-allowed;
+    opacity: .7;
+    filter: grayscale(.06) contrast(.95);
+    box-shadow:
+      0 4px 12px rgba(224, 176, 78, 0.18),
+      inset 0 0 0 rgba(0, 0, 0, 0);
+  }
+
+  /* Soporte opcional para “loading” si decides añadir data-loading o aria-busy */
+  &[data-loading="true"],
+  &[aria-busy="true"] {
+    pointer-events: none;
+    position: relative;
+  }
+  &[data-loading="true"]::before,
+  &[aria-busy="true"]::before {
+    content: "";
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    border: 2px solid rgba(30, 20, 5, .25);
+    border-top-color: #1e1405;
+    position: absolute;
+    right: 14px; /* mantiene el texto centrado */
+    animation: spin .9s linear infinite;
+  }
+}
+
+/* Animación del spinner */
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Respeta reduce motion */
+@media (prefers-reduced-motion: reduce) {
+  .primary-button { transition: none; }
+  .primary-button::after { transition: none; }
+}
+
+
+/* Tamaño fluido sin pasarte */
+.primary-button { font-size: clamp(1rem, 0.9rem + 0.4vw, 1.25rem); }
+
+/* Si tu fuente no tiene pesos altos */
+.primary-button { font-weight: 700; text-shadow: 0 0 1px rgba(0,0,0,.15); } 

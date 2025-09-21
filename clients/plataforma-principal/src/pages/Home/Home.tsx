@@ -5,8 +5,8 @@ import './Home.scss';
 import LoginForm from './components/Login/LoginForm';
 import RegisterForm from './components/Register/RegisterForm';
 import dashboardImg from '../../assets/dashboard.png';
-import Logo from '../../components/common/Logo/Logo';
 import LangSwitcher from '../../components/common/LangSwitcher/LangSwitcher';
+import myLogo from '../../assets/logo.png';
 
 type Mode = 'login' | 'register';
 type Anim = 'idle' | 'expanding' | 'closing';
@@ -71,7 +71,7 @@ export default function Home() {
         />
 
         <div className="center-content">
-          <Logo/>
+          <img src={myLogo} alt="Logo" className='logo' />
 
           <div>
             <h1>{t(`titles.${mode}.title`)}</h1>
