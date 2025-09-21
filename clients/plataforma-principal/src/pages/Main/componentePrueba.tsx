@@ -1,5 +1,5 @@
 // src/pages/MainPage/components/ComponentePrueba/ComponentePrueba.tsx
-import React, { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import './ComponentePrueba.scss';
 import { tokenStore } from '../../api/token/tokenStore';
 import { hrApiUrl, productionApiUrl, API_HR_BASE, API_PRODUCTION_BASE } from '../../api/config';

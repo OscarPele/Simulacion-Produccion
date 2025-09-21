@@ -1,0 +1,112 @@
+/* === SideBar — tema “azia” oscuro con dorado === */
+$gold: #E0B04E;
+$gold-ghost: rgba(224, 176, 78, 0.14);
+$gold-ghost-strong: rgba(224, 176, 78, 0.22);
+$border-gold: rgba(160, 118, 1, 0.55);
+$panel: rgba(20, 20, 20, 0.55);
+$text: #f8f3e3;
+$text-muted: #d4cfc4;
+
+.sidebar {
+  width: 240px;
+  min-height: 100dvh;
+  padding: 16px;
+  box-sizing: border-box;
+
+  position: sticky;
+  top: 0;
+
+  background: $panel;
+  border-right: 1px solid $border-gold;
+  box-shadow:
+    0 4px 20px rgba(0, 0, 0, 0.7),
+    inset 0 -1px 0 rgba(224,176,78,.10);
+  backdrop-filter: blur(1px);
+  color: $text;
+  font-family: 'Cinzel', system-ui, serif;
+}
+
+
+.sidebar__list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 6px;
+}
+
+.sidebar__item { margin: 0; }
+
+.sidebar__link {
+  --pad-x: 12px;
+  --pad-y: 10px;
+
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: var(--pad-y) var(--pad-x);
+  text-decoration: none;
+  color: $text;
+  border-radius: 12px;
+  background: transparent;
+  border: 1px solid transparent;
+
+  transition: background .18s ease, border-color .18s ease, transform .12s ease;
+
+  &:hover {
+    background: $gold-ghost;
+    border-color: rgba(224,176,78,.18);
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0);
+    background: $gold-ghost-strong;
+  }
+
+  &.is-active {
+    background: $gold-ghost-strong;
+    border-color: $border-gold;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,.08),
+      0 6px 16px rgba(0,0,0,.25);
+    font-weight: 600;
+    color: $text;
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow:
+      0 0 0 2px #0f0f0f,
+      0 0 0 4px rgba(224, 176, 78, 0.65);
+  }
+}
+
+.sidebar__emoji {
+  font-size: 18px;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  opacity: .95;
+}
+
+.sidebar__text {
+  font-size: 0.95rem;
+  letter-spacing: .02em;
+  color: $text;
+}
+
+/* Compactación responsive */
+@media (max-width: 900px) {
+  .sidebar {
+    width: 210px;
+    padding: 14px;
+  }
+  .sidebar__link { --pad-y: 9px; --pad-x: 10px; }
+}
+
+/* Accesibilidad: reduce motion */
+@media (prefers-reduced-motion: reduce) {
+  .sidebar__link { transition: none; }
+}

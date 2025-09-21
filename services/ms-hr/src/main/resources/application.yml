@@ -19,7 +19,6 @@ spring:
     properties:
       hibernate.default_schema: hr
 
-
 management:
   endpoints:
     web:
@@ -28,7 +27,6 @@ management:
   endpoint:
     health:
       show-details: always
-
 
 app:
   jwt:
@@ -39,6 +37,11 @@ security:
   permit-all: /actuator/health,/actuator/info,/api/hr/public/**
 
 cors:
-  allowed-origins: ""
+  allowed-origins: "https://www.opsimulator.com,https://opsimulator.com,http://localhost:5173,http://192.168.*.*:5173"
   allowed-methods: "GET,POST,PUT,DELETE,OPTIONS"
   allowed-headers: "*"
+
+
+logging:
+  level:
+    org.springframework.web.cors: DEBUG
