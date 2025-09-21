@@ -24,6 +24,7 @@
         <module>services/shared.security</module>
         <module>services/ms-auth</module>
         <module>services/ms-hr</module>
+        <module>services/ms-production</module>
     </modules>
 
 

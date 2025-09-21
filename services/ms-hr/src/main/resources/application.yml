@@ -15,23 +15,6 @@ management:
     health:
       show-details: always
 
-logging:
-  level:
-    root: INFO
-    com.oscar.proyecto: INFO
-    com.oscar.shared.security: INFO
-    org.springframework.web: ERROR
-    org.springframework.security: DEBUG
-    org.hibernate.SQL: ERROR
-
-
-server:
-  port: 8082
-  address: 0.0.0.0
-  error:
-    include-message: always
-    include-binding-errors: never
-    include-stacktrace: never
 
 app:
   jwt:

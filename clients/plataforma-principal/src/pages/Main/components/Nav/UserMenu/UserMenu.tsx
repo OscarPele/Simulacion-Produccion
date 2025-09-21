@@ -192,10 +192,10 @@ export default function UserMenu() {
               {error && <p className="error">{error}</p>}
 
               <div className="modal-actions">
-                <button type="button" onClick={() => setShowPwd(false)} disabled={loading}>
+                <button type="button" className="btn-secondary" onClick={() => setShowPwd(false)} disabled={loading}>
                   {t('actions.cancel')}
                 </button>
-                <button type="submit" disabled={!canSubmit}>
+                <button type="submit" className="btn-primary" disabled={!canSubmit}>
                   {loading ? t('states.saving') : t('actions.save')}
                 </button>
               </div>

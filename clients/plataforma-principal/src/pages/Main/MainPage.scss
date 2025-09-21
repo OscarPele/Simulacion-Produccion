@@ -1,3 +1,4 @@
+/* === NAV BAR estilo “azia” oscuro con dorado === */
 .main-nav {
   position: sticky;
   top: 0;
@@ -5,42 +6,47 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
-  padding: 0.75rem 1rem;
-  border-bottom: 1px solid #eee;
-  background: #fff;
+  gap: .75rem;
+  background-color: rgba(188, 188, 188, 0.114);
+  padding: .6rem 1rem;;
+  border-bottom: 1px solid rgba(160, 118, 1, 0.55);
+  box-shadow:
+    0 6px 20px rgba(0,0,0,.45),
+    inset 0 -1px 0 rgba(224,176,78,.10);
+
+  backdrop-filter: blur(1px);
+  color: #f9f4e3;
+  font-family: 'Cinzel', system-ui, serif;
 }
 
-.nav-left,
-.nav-right {
-  display: flex;
-  align-items: center;
-}
+.nav-left, .nav-right { display: flex; align-items: center; gap: .6rem; }
 
 .main-nav .company-logo {
-  padding: 0;
-  gap: 0.5rem;
+  display: inline-flex;
+  align-items: center;
+  gap: .55rem;
+  padding: .4rem .6rem;
+  border-radius: 10px;
+  background: rgba(215, 215, 215, 0.428);
+  border: 1px solid rgba(224,176,78,.35);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.08);
+  color: #E0B04E;
+
+  /* texto compacto tipo UI */
+  font-size: .9rem;
+  letter-spacing: .04em;
 }
 
-
-
-.main-content { padding: 1.25rem; }
-
-.auth-flag {
-  display: flex;
-  align-items: flex-start;
-  gap: .75rem;
-  padding: .9rem 1rem;
-  border-radius: 12px;
-  border: 1px solid #e7e7e7;
-  background: #fff;
-  max-width: 800px;
+.nav-logo {
+  max-width: 120px;
+  width: 80%;
+  display: block;
+  margin: 0 auto;
 }
 
-.auth-flag.success { border-color: #c6f6d5; background: #f0fff4; }
-.auth-flag.warning { border-color: #fed7d7; background: #fff5f5; }
-
-.auth-flag__icon { font-size: 1.5rem; line-height: 1; }
-.auth-flag__body h2 { margin: 0 0 .25rem 0; font-size: 1.05rem; }
-.auth-flag__body p { margin: 0; color: #444; }
+/* === CONTENIDO PRINCIPAL coherente con “home” === */
+.main-content {
+  padding: 1.25rem;
+  color: #f8f3e3;
+}
 

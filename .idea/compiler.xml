@@ -6,9 +6,10 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="ms-auth" />
         <module name="ms-hr" />
         <module name="shared.security" />
-        <module name="ms-auth" />
+        <module name="ms-production" />
       </profile>
     </annotationProcessing>
   </component>
@@ -16,6 +17,7 @@
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="ms-auth" options="-parameters" />
       <module name="ms-hr" options="-parameters" />
+      <module name="ms-production" options="-parameters" />
       <module name="shared.security" options="-parameters" />
     </option>
   </component>

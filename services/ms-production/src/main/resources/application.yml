@@ -1,0 +1,30 @@
+spring:
+  application:
+    name: ms-producction
+  jackson:
+    time-zone: Europe/Madrid
+    serialization:
+      indent_output: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always
+
+
+app:
+  jwt:
+    issuer: ms-auth
+    public-key-location: classpath:jwt/public.pem
+
+security:
+  permit-all: /actuator/health,/actuator/info
+
+cors:
+  allowed-origins: ""
+  allowed-methods: "GET,POST,PUT,DELETE,OPTIONS"
+  allowed-headers: "*"
