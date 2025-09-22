@@ -1,0 +1,26 @@
+.hr-page {
+  padding: 2rem;
+  text-align: center;
+
+  /* Fondo semitransparente para diferenciarlo */
+  background: rgba(224, 176, 78, 0.12);
+  border: 2px dashed #E0B04E;
+  border-radius: 12px;
+
+  /* Tipografía */
+  font-family: 'Cinzel', system-ui, serif;
+  color: #E0B04E;
+
+  h1 {
+    margin: 0 0 1rem 0;
+    font-size: 2rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  p {
+    font-size: 1rem;
+    color: #f8f3e3;
+  }
+}

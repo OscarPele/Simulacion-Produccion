@@ -2,3 +2,9 @@
 **/target
 **/.idea
 **/.DS_Store
+
+**/target/
+node_modules
+.vscode
+.idea
+.DS_Store

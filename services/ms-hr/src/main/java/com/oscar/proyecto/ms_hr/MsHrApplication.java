@@ -4,22 +4,12 @@ import com.oscar.shared.security.MSSecurityConfig;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.Bean;
-import org.springframework.core.env.Environment;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.bind.annotation.*;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.time.Instant;
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 @SpringBootApplication
 @Import(MSSecurityConfig.class)
@@ -28,39 +18,12 @@ public class MsHrApplication {
         SpringApplication.run(MsHrApplication.class, args);
     }
 
-    @Bean
-    public org.springframework.boot.CommandLineRunner hrStartupInfo(Environment env) {
-        return args -> {
-            System.out.println("[ms-hr] === STARTUP ===");
-            System.out.println("[ms-hr] Active profiles: " + Arrays.toString(env.getActiveProfiles()));
-            System.out.println("[ms-hr] server.port = " + env.getProperty("server.port"));
-            System.out.println("[ms-hr] app.jwt.public-key-location = " + env.getProperty("app.jwt.public-key-location"));
-            System.out.println("[ms-hr] =================");
-        };
-    }
-
-    @Bean
-    public OncePerRequestFilter hrProbeFilter() {
-        return new OncePerRequestFilter() {
-            @Override
-            protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
-                    throws ServletException, IOException {
-                String uri = request.getRequestURI();
-                if (uri.startsWith("/api/hr/")) {
-                    String auth = request.getHeader("Authorization");
-                    System.out.println("[ms-hr][IN] " + request.getMethod() + " " + uri
-                            + " | AuthPresent=" + (auth != null));
-                }
-                chain.doFilter(request, response);
-            }
-        };
-    }
-
     @RestController
-    static class HrProbeController {
-        @GetMapping("/api/hr/public/ping")
-        public Map<String, Object> publicPing(HttpServletRequest req) {
-            System.out.println("[ms-hr][CTRL] /public/ping");
+    @RequestMapping("/api/hr")
+    static class HrController {
+
+        @GetMapping("/public/ping")
+        public Map<String, Object> publicPing() {
             return Map.of(
                     "service", "ms-hr",
                     "status", "ok",
@@ -68,38 +31,13 @@ public class MsHrApplication {
             );
         }
 
-        @GetMapping("/api/hr/secure/me")
-        public Map<String, Object> secureMe(Authentication auth, HttpServletRequest req) {
-            System.out.println("[ms-hr][CTRL] /secure/me");
-            if (auth == null) {
-                System.out.println("[ms-hr][CTRL] Authentication es null -> 401 debería venir del filtro");
-                return Map.of("error", "no-auth");
-            }
-            String subject = auth.getName(); // principal String puesto por MSJwtAuthFilter
-            var roles = auth.getAuthorities().stream().map(Object::toString).toList();
-            var decoded = decodeJwtPayload(req.getHeader("Authorization")); // solo debug
-
-            System.out.println("[ms-hr][AUTH] sub=" + subject + " roles=" + roles);
-
-            Map<String, Object> out = new LinkedHashMap<>();
+        @GetMapping("/secure/me")
+        public Map<String, Object> secureMe(Authentication auth) {
+            var out = new LinkedHashMap<String, Object>();
             out.put("service", "ms-hr");
-            out.put("subject", subject);
-            out.put("authorities", roles);
-            out.put("jwtPayloadDebug", decoded); // puede ser null si no hay header
+            out.put("subject", auth.getName()); // principal String puesto por MSJwtAuthFilter
+            out.put("authorities", auth.getAuthorities().stream().map(Object::toString).toList());
             return out;
-        }
-
-        private static Map<String, Object> decodeJwtPayload(String authHeader) {
-            try {
-                if (authHeader == null || !authHeader.startsWith("Bearer ")) return null;
-                String token = authHeader.substring("Bearer ".length());
-                String[] parts = token.split("\\.");
-                if (parts.length < 2) return null;
-                String payload = new String(Base64.getUrlDecoder().decode(parts[1]), StandardCharsets.UTF_8);
-                return Map.of("raw", payload);
-            } catch (Exception e) {
-                return Map.of("error", e.getMessage());
-            }
         }
     }
 }
