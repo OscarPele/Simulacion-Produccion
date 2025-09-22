@@ -328,3 +328,110 @@
 
 /* Si tu fuente no tiene pesos altos */
 .primary-button { font-weight: 700; text-shadow: 0 0 1px rgba(0,0,0,.15); } 
+
+
+/* --- Small-screen refinements (no layout changes) --- */
+
+@media (max-width: 1024px) {
+  .login-card { max-width: 420px; gap: 14px; }
+
+  .fieldset { gap: 12px; }
+
+  .pill-input { padding: 14px; gap: 10px; border-radius: 14px; }
+  .pill-input input { font-size: 0.92rem; }
+  .pill-input .left-icon,
+  .pill-input .right-icon { font-size: 1rem; }
+  .pill-input .right-icon { padding: 3px; }
+
+  .row-end { padding-right: 2px; }
+
+  .link { font-size: 0.98rem; }
+  .signup-link { font-size: 0.98rem; }
+
+  .error, .info, .success,
+  .signup-text, .forgot-link { font-size: 0.88rem; }
+
+  .success-block { padding: 10px 12px; border-radius: 12px; }
+
+  .inline-actions { gap: 6px; }
+
+  .secondary-button { padding: 11px 12px; font-size: 0.93rem; border-radius: 12px; }
+
+  .primary-button { padding: 13px 15px; border-radius: 13px; gap: 6px; }
+  .primary-button[aria-busy="true"]::before,
+  .primary-button[data-loading="true"]::before {
+    width: 14px; height: 14px; right: 12px;
+  }
+}
+
+@media (max-width: 768px) {
+  .login-card { max-width: 400px; gap: 12px; }
+
+  .fieldset { gap: 12px; }
+
+  .pill-input { padding: 12px; gap: 10px; border-radius: 12px; }
+  .pill-input input { font-size: 0.9rem; }
+  .pill-input .left-icon,
+  .pill-input .right-icon { font-size: 0.95rem; }
+
+  .link { font-size: 0.95rem; }
+  .signup-link { font-size: 0.96rem; }
+
+  .error, .info, .success,
+  .signup-text, .forgot-link { font-size: 0.86rem; }
+
+  .success-block { padding: 10px 12px; border-radius: 10px; }
+  .success-title { font-size: 0.92rem; }
+  .success-hint { font-size: 0.86rem; }
+
+  .inline-actions { gap: 6px; margin-top: 8px; }
+
+  .secondary-button { padding: 10px 12px; font-size: 0.92rem; border-radius: 11px; }
+
+  .primary-button { padding: 12px 14px; border-radius: 12px; gap: 6px; }
+  .primary-button[aria-busy="true"]::before,
+  .primary-button[data-loading="true"]::before {
+    width: 14px; height: 14px; right: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .login-card { max-width: 360px; gap: 10px; }
+
+  .fieldset { gap: 10px; }
+
+  .pill-input { padding: 10px; gap: 8px; border-radius: 10px; }
+  .pill-input input { font-size: 0.88rem; }
+  .pill-input .left-icon,
+  .pill-input .right-icon { font-size: 0.9rem; }
+  .pill-input .right-icon { padding: 3px; border-radius: 7px; }
+
+  .row-end { padding-right: 0; }
+
+  .link { font-size: 0.92rem; }
+  .signup-link { font-size: 0.95rem; }
+
+  .error { font-size: 0.85rem; margin: 4px 6px 0; }
+  .info, .success, .signup-text, .forgot-link { font-size: 0.85rem; }
+
+  .success-block { padding: 8px 10px; border-radius: 10px; }
+  .success-title { font-size: 0.9rem; }
+  .success-hint { font-size: 0.84rem; }
+
+  .inline-actions { gap: 6px; margin-top: 8px; }
+
+  .secondary-button { padding: 10px 12px; font-size: 0.9rem; border-radius: 10px; }
+
+  .primary-button {
+    padding: 12px 13px;
+    border-radius: 11px;
+    gap: 6px;
+    font-size: clamp(0.95rem, 0.9rem + 0.2vw, 1.1rem);
+  }
+  .primary-button[aria-busy="true"]::before,
+  .primary-button[data-loading="true"]::before {
+    width: 12px; height: 12px; right: 10px;
+  }
+
+  .forgot-container { padding: 0 4px; }
+}

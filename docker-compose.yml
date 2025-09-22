@@ -1,6 +1,7 @@
 services:
   postgres:
-    image: postgres:16
+    image: postgres:16-alpine
+    platform: linux/arm64
     env_file: .env
     environment:
       POSTGRES_DB: ${POSTGRES_DB}

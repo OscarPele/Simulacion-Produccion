@@ -19,7 +19,7 @@ RUN --mount=type=cache,target=/root/.m2 \
 
 # 2) Empaqueta ms-auth (ya resolverá shared.security desde ~/.m2)
 RUN --mount=type=cache,target=/root/.m2 \
-    mvn -q -B -DskipTests -f services/ms-auth/pom.xml package
+    mvn -q -B -DskipTests -f services/ms-auth/pom.xml -am package
 
 ######### STAGE 2: RUNTIME #########
 FROM eclipse-temurin:21-jre

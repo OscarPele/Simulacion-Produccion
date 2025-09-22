@@ -9,12 +9,10 @@ $text-muted: #d4cfc4;
 
 .sidebar {
   width: 240px;
-  min-height: 100dvh;
   padding: 16px;
   box-sizing: border-box;
 
   position: sticky;
-  top: 0;
 
   background: $panel;
   border-right: 1px solid $border-gold;
@@ -110,3 +108,49 @@ $text-muted: #d4cfc4;
 @media (prefers-reduced-motion: reduce) {
   .sidebar__link { transition: none; }
 }
+
+
+
+.sidebar__icon {
+  display: inline-flex;
+  margin-right: .5rem;
+
+
+  svg {
+    width: 20px;
+    height: 20px;
+    color: #d4af37;
+    stroke-width: 1.75;
+  }
+}
+
+.sidebar__link.is-active svg {
+  color: #f0cf66;
+}
+
+
+
+
+
+
+/* ===== Separadores entre items ===== */
+.sidebar__item {
+  position: relative;
+}
+
+.sidebar__item + .sidebar__item::before {
+  content: "";
+  position: absolute;
+  left: 44px;
+  right: 8px;
+  top: -3px;
+  border-top: 1px solid rgba(224, 176, 78, 0.28);
+  pointer-events: none;
+}
+
+@media (max-width: 900px) {
+  .sidebar__item + .sidebar__item::before {
+    left: 40px;
+  }
+}
+/* ================================ */

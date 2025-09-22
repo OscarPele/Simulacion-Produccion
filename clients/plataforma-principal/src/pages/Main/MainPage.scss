@@ -1,3 +1,6 @@
+:root { --nav-h: 64px; }
+
+
 /* === NAV BAR estilo “azia” oscuro con dorado === */
 .main-nav {
   position: sticky;
@@ -8,7 +11,7 @@
   justify-content: space-between;
   gap: .75rem;
   background-color: rgba(46, 46, 46, 0.73);
-  padding: .6rem 1rem;;
+  padding: .6rem 1rem;
   border-bottom: 1px solid rgba(160, 118, 1, 0.55);
   box-shadow:
     0 6px 20px rgba(0,0,0,.45),
@@ -17,6 +20,8 @@
   backdrop-filter: blur(1px);
   color: #f9f4e3;
   font-family: 'Cinzel', system-ui, serif;
+
+  height: var(--nav-h);
 }
 
 .nav-left, .nav-right { display: flex; align-items: center; gap: .6rem; }
@@ -48,5 +53,6 @@
 .main-content {
   padding: 1.25rem;
   color: #f8f3e3;
+  background-color: black;
 }
 
